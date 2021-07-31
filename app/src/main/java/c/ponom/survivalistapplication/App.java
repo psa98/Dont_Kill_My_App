@@ -16,8 +16,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import static c.ponom.survivalistapplication.SharedPrefsRepository.*;
 import static c.ponom.survivalistapplication.SharedPrefsRepository.DataType.STRING;
+import static c.ponom.survivalistapplication.SharedPrefsRepository.getParameterString;
+import static c.ponom.survivalistapplication.SharedPrefsRepository.saveParameter;
 
 
 /*
@@ -38,22 +39,22 @@ Target СДК 31 - воркер с приоритетом + смотреть к�
 public class App extends Application {
 
 
-    public static MutableLiveData<String> liveList=new MutableLiveData<>();
+    public static MutableLiveData<String> liveList = new MutableLiveData<>();
     public static int tickCount;
-    public static final long FREQUENT_REQUEST_PERIOD=30;
-    private static final long INFREQUENT_REQUEST_PERIOD=300;
+    public static final long FREQUENT_REQUEST_PERIOD = 30;
+    private static final long INFREQUENT_REQUEST_PERIOD = 300;
     Application application;
-    public static ArrayList<Date> tickList =new ArrayList<>();
-    public static String fullListString="";
+    public static ArrayList<Date> tickList = new ArrayList<>();
+    public static String fullListString = "Launching...";
     public static WorkManager workManager;
     private static SharedPreferences sharedPreferences;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        application =this;
-        sharedPreferences=getSharedPreferences("globalSettings", Context.MODE_PRIVATE);
-        workManager =WorkManager.getInstance(this);
+        application = this;
+        sharedPreferences = getSharedPreferences("globalSettings", Context.MODE_PRIVATE);
+        workManager = WorkManager.getInstance(this);
         workManager.cancelAllWork();
         launchFrequentWorkRequest(FREQUENT_REQUEST_PERIOD);
         KeepAliveReceiver keepAliveReceiver =new KeepAliveReceiver();
@@ -77,7 +78,7 @@ public class App extends Application {
     }
 
     public static void registerWorkerEvent(String type) {
-        String eventString ="\n"+ formattedTimeStamp()+", worker Event "+type;
+        String eventString = "\n" + formattedTimeStamp() + ", worker event " + type;
         fullListString=fullListString+eventString;
         appendEvent(eventString);
 
@@ -87,7 +88,7 @@ public class App extends Application {
       @SuppressLint("SimpleDateFormat")
       SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
       return formatter.format(new Date());
-    };
+    }
 
 
     private static synchronized void  appendEvent (String eventString){
@@ -102,7 +103,6 @@ public class App extends Application {
                         .setInitialDelay(period,TimeUnit.SECONDS)
                         .addTag(""+period) // tag будет содержать один элемент, равный периоду (в строке)
                         .build();
-        singleWorkRequest.hashCode();
         workManager.enqueue(singleWorkRequest);
     }
 
