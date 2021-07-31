@@ -2,7 +2,6 @@ package c.ponom.survivalistapplication;
 
 import android.content.Context;
 import androidx.annotation.NonNull;
-import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
@@ -25,7 +24,7 @@ public class KeepAliveWorkRequest extends Worker {
     public Result doWork() {
 
         // единственная задача воркера - разбудить приложение если его вдруг прибила система
-        App.registerWorkerEvent();
+        App.registerWorkerEvent("Type=" + tagString + "seconds");
 
         return Result.success();
 

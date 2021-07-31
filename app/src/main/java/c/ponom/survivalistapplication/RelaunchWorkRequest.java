@@ -26,10 +26,10 @@ public class RelaunchWorkRequest extends Worker {
     public Result doWork() {
 
         // задача воркера  - рестарт нового одноразового
-        App.registerWorkerEvent();
+
         Set tags = getTags();
         String tagString = (String) getTags().toArray()[1];
-
+        App.registerWorkerEvent("Type="+tagString+"seconds");
         int period = Integer.parseInt(tagString);
         // извлекаем данные о заданном времени из единственного тэга.
         App.launchFrequentWorkRequest(period);

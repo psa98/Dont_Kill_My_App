@@ -44,7 +44,7 @@ public class App extends Application {
     private static final long INFREQUENT_REQUEST_PERIOD=300;
     Application application;
     public static ArrayList<Date> tickList =new ArrayList<>();
-    public static String fullListString="Launch";
+    public static String fullListString="";
     public static WorkManager workManager;
     private static SharedPreferences sharedPreferences;
 
@@ -58,7 +58,7 @@ public class App extends Application {
         launchFrequentWorkRequest(FREQUENT_REQUEST_PERIOD);
         KeepAliveReceiver keepAliveReceiver =new KeepAliveReceiver();
         this.registerReceiver(keepAliveReceiver,new IntentFilter(Intent.ACTION_TIME_TICK));
-        appendEvent("\n Relaunch");
+        appendEvent("\n Relaunch"+formattedTimeStamp());
         liveList.postValue(fullListString);
     }
 
@@ -76,8 +76,8 @@ public class App extends Application {
         appendEvent(eventString);
     }
 
-    public static void registerWorkerEvent() {
-        String eventString ="\n"+ formattedTimeStamp()+", worker Event";
+    public static void registerWorkerEvent(String type) {
+        String eventString ="\n"+ formattedTimeStamp()+", worker Event "+type;
         fullListString=fullListString+eventString;
         appendEvent(eventString);
 
