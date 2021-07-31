@@ -42,7 +42,7 @@ public class App extends Application {
     public static MutableLiveData<String> liveList = new MutableLiveData<>();
     public static int tickCount;
     public static final long FREQUENT_REQUEST_PERIOD = 30;
-    private static final long INFREQUENT_REQUEST_PERIOD = 300;
+    private static final long INFREQUENT_REQUEST_PERIOD = 120;
     Application application;
     public static ArrayList<Date> tickList = new ArrayList<>();
     public static String fullListString = "Launching...";
@@ -57,9 +57,10 @@ public class App extends Application {
         workManager = WorkManager.getInstance(this);
         workManager.cancelAllWork();
         launchFrequentWorkRequest(FREQUENT_REQUEST_PERIOD);
+        launchFrequentWorkRequest(INFREQUENT_REQUEST_PERIOD);
         KeepAliveReceiver keepAliveReceiver =new KeepAliveReceiver();
-        this.registerReceiver(keepAliveReceiver,new IntentFilter(Intent.ACTION_TIME_TICK));
-        appendEvent("\n Relaunch"+formattedTimeStamp());
+        this.registerReceiver(keepAliveReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
+        appendEvent("\n Relaunch " + formattedTimeStamp());
         liveList.postValue(fullListString);
     }
 
