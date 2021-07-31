@@ -14,25 +14,19 @@
         android:layout_height="wrap_content"
         android:onClick="clearEvents"
         tools:ignore="HardcodedText">
-
     </Button>
 
-    <Button
-        android:text="Load events"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="showFullLog"
-        tools:ignore="HardcodedText">
 
-    </Button>
 
     <EditText
         android:inputType="none"
-
+        android:ellipsize="end"
+        android:scrollbars="vertical"
         android:id="@+id/logList"
-         android:textSize="10sp"
+        android:textSize="12sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-      />
+        android:importantForAutofill="no"
+        tools:ignore="LabelFor" />
 
 </LinearLayout>

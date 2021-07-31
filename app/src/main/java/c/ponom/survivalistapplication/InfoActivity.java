@@ -1,6 +1,8 @@
 package c.ponom.survivalistapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
@@ -25,6 +27,21 @@ public class InfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         list =findViewById(R.id.logList);
+
+
+        LiveData<String> eventList = App.liveList;
+        eventList.observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String newList) {
+                showAndScrollToEnd(newList);
+            }
+        });
+    }
+
+    private void showAndScrollToEnd(String newList) {
+        list.setText(newList);
+        list.setSelection(newList.length()-2,newList.length()-1);
+        list.clearFocus();
     }
 
     public void showFullLog(View view) {
@@ -38,9 +55,5 @@ public class InfoActivity extends AppCompatActivity {
         list.setText("");
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        list.setText(getParameterString("events"));
-    }
+
 }

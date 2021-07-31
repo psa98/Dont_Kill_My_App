@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 
+import androidx.lifecycle.MutableLiveData;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
@@ -36,6 +37,8 @@ Target СДК 31 - воркер с приоритетом + смотреть к�
 
 public class App extends Application {
 
+
+    public static MutableLiveData<String> liveList=new MutableLiveData<>();
     public static int tickCount;
     public static final long FREQUENT_REQUEST_PERIOD=30;
     private static final long INFREQUENT_REQUEST_PERIOD=300;
@@ -55,6 +58,8 @@ public class App extends Application {
         launchFrequentWorkRequest(FREQUENT_REQUEST_PERIOD);
         KeepAliveReceiver keepAliveReceiver =new KeepAliveReceiver();
         this.registerReceiver(keepAliveReceiver,new IntentFilter(Intent.ACTION_TIME_TICK));
+        appendEvent("\n Relaunch");
+        liveList.postValue(fullListString);
     }
 
     static void registerTick(){
@@ -88,6 +93,7 @@ public class App extends Application {
     private static synchronized void  appendEvent (String eventString){
         String oldEventsList= getParameterString("events");
         saveParameter(oldEventsList+eventString,"events", STRING);
+        liveList.postValue(oldEventsList+eventString);
     }
 
     public static void launchFrequentWorkRequest(long period) {
