@@ -6,22 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.util.Log;
 
-import androidx.annotation.NonNull;
-import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
-import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
-import androidx.work.WorkQuery;
-import androidx.work.Worker;
-import androidx.work.WorkerParameters;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import static c.ponom.survivalistapplication.SharedPrefsRepository.*;
@@ -46,6 +37,8 @@ Target СДК 31 - воркер с приоритетом + смотреть к�
 public class App extends Application {
 
     public static int tickCount;
+    public static final long FREQUENT_REQUEST_PERIOD=30;
+    private static final long INFREQUENT_REQUEST_PERIOD=300;
     Application application;
     public static ArrayList<Date> tickList =new ArrayList<>();
     public static String fullListString="Launch";
@@ -59,7 +52,7 @@ public class App extends Application {
         sharedPreferences=getSharedPreferences("globalSettings", Context.MODE_PRIVATE);
         workManager =WorkManager.getInstance(this);
         workManager.cancelAllWork();
-        launchWorkRequest();
+        launchFrequentWorkRequest(FREQUENT_REQUEST_PERIOD);
         KeepAliveReceiver keepAliveReceiver =new KeepAliveReceiver();
         this.registerReceiver(keepAliveReceiver,new IntentFilter(Intent.ACTION_TIME_TICK));
     }
@@ -97,19 +90,19 @@ public class App extends Application {
         saveParameter(oldEventsList+eventString,"events", STRING);
     }
 
-    public static void launchWorkRequest() {
+    public static void launchFrequentWorkRequest(long period) {
         OneTimeWorkRequest singleWorkRequest =
                 new OneTimeWorkRequest.Builder(RelaunchWorkRequest.class)
-                        .setInitialDelay(30,TimeUnit.SECONDS)
+                        .setInitialDelay(period,TimeUnit.SECONDS)
+                        .addTag(""+period) // tag будет содержать один элемент, равный периоду (в строке)
                         .build();
+        singleWorkRequest.hashCode();
         workManager.enqueue(singleWorkRequest);
-
     }
 
     public static SharedPreferences getSharedPreferences() {
         return sharedPreferences;
     }
-
 
 
 }

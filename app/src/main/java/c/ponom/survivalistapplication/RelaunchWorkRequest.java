@@ -6,6 +6,8 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import java.util.Set;
+
 
 public class RelaunchWorkRequest extends Worker {
 
@@ -25,7 +27,12 @@ public class RelaunchWorkRequest extends Worker {
 
         // задача воркера  - рестарт нового одноразового
         App.registerWorkerEvent();
-        App.launchWorkRequest();
+        Set tags = getTags();
+        String tagtring = (String) getTags().toArray()[1];
+
+        int period = Integer.getInteger(tagtring);
+        // извлекаем данные о заданном времени из единственного тэга.
+        App.launchFrequentWorkRequest(period);
         return Result.success();
 
     }

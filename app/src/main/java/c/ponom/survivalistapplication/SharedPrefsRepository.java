@@ -23,6 +23,8 @@ public class SharedPrefsRepository {
         //можно изменить значения по умолчанию для конкретного проекта,
         // к примеру на Float.NaN или Integer.MAX_VALUE  - в этом случае мы будем знать что
         // параметр ранее не устанавливался. Но лучше использовать contains()
+        // TODO = добавить метод для его простой проверки, и методы меняющие/не меняющие значение/
+        //  возвращающие true / если значение отсутсвовало и было усчтановлено впервые
 
         BOOLEAN (false, Boolean.TYPE ),
         FLOAT( 0f,  Float.TYPE),
@@ -48,7 +50,7 @@ public class SharedPrefsRepository {
 
     // цель всего этого - обеспечить обязательное указание вида параметра в методе
     // сохранения и fail fast контроль за его типом. При этом обеспечивается единая точка входа
-    // для всех параметров,
+    // для всех параметров
 
     public static synchronized void  saveParameter(Object parameter, String key, DataType parameterType){
 
