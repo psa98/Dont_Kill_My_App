@@ -16,8 +16,6 @@ public class RelaunchWorkRequest extends Worker {
         super(appContext, workerParams);
     }
 
-    //Data sampleResultData = Data.fromByteArray(new byte[]{1});
-    // тут можно вернуть данные из воркера
 
 
 
@@ -28,11 +26,18 @@ public class RelaunchWorkRequest extends Worker {
         // задача воркера  - рестарт нового одноразового
 
         Set<String> tags = getTags();
-        String tagString = (String) getTags().toArray()[1];
+        String tagString = "Unknown!";
+        for (String tagItem : tags) {
+            //todo  грубый хак для передачи числа в тэгах,
+            // заменить тэг на что то вроде seconds=xxx,брать оттуда
+            if (tagItem.length() > 5) continue;
+            tagString = tagItem;
+            break;
+        }
+
         App.registerWorkerEvent("type=" + tagString + " seconds");
         int period = Integer.parseInt(tagString);
-        // извлекаем данные о заданном времени из единственного тэга.
-        App.launchFrequentWorkRequest(period);
+        App.launchRepeatingWorkRequest(period);
         return Result.success();
 
     }
