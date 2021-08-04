@@ -14,36 +14,32 @@ import static c.ponom.survivalistapplication.App.getSharedPreferences;
 public class SharedPrefsRepository {
 
 
-    @SuppressWarnings("FieldCanBeLocal")
-    enum DataType{
-        // commit вместо apply используется как более надежный в части сохранения параметров в файле.
-        // на реальных устройствах временем записи файла можно пренебречь и блокирование
-        // несущественно по времени
-
-        //можно изменить значения по умолчанию для конкретного проекта,
-        // к примеру на Float.NaN или Integer.MAX_VALUE  - в этом случае мы будем знать что
-        // параметр ранее не устанавливался. Но лучше использовать contains()
-
-        BOOLEAN (false, Boolean.TYPE ),
-        FLOAT( 0f,  Float.TYPE),
-        INT(0, Integer.TYPE ),
-        LONG(0L, Long.TYPE ),
-        STRING("",  String.class);
-
-         private final Object defaultValue;
-         private final Type type;
-
-         DataType(Object defaultValue, Type type) {
-            this.defaultValue=defaultValue;
-            this.type = type;
-        }
+    static public synchronized boolean hasParameterSet(String key) {
+        return getSharedPreferences().contains(key);
     }
 
+    public static synchronized Map<String, ?> getPreferencesAsMap() {
 
-    public static synchronized Map<String,?> getPreferencesAsMap(){
+        Map<String, ?> map = getSharedPreferences().getAll();
+        return Collections.unmodifiableMap(map);
+    }
 
-        Map<String,?> map =getSharedPreferences().getAll();
-         return Collections.unmodifiableMap(map);
+    @SuppressWarnings("FieldCanBeLocal")
+    enum DataType {
+
+        BOOLEAN(false, Boolean.TYPE),
+        FLOAT(0f, Float.TYPE),
+        INT(0, Integer.TYPE),
+        LONG(0L, Long.TYPE),
+        STRING("", String.class);
+
+        private final Object defaultValue;
+        private final Type type;
+
+        DataType(Object defaultValue, Type type) {
+            this.defaultValue = defaultValue;
+            this.type = type;
+        }
     }
 
     // цель всего этого - обеспечить обязательное указание вида параметра в методе
@@ -51,7 +47,6 @@ public class SharedPrefsRepository {
     // для всех параметров
 
     public static synchronized void  saveParameter(Object parameter, String key, DataType parameterType){
-
 
         switch (parameterType) {
             case  BOOLEAN:
@@ -70,8 +65,6 @@ public class SharedPrefsRepository {
                getSharedPreferences().edit().putString(key, (String)parameter).commit();
         }
     }
-
-
 
     static  public synchronized long  getParameterLong (String key){
         return getSharedPreferences().getLong(key, (long) DataType.LONG.defaultValue);
@@ -93,8 +86,4 @@ public class SharedPrefsRepository {
         return getSharedPreferences().getFloat(key, (float) DataType.FLOAT.defaultValue);
     }
 
-    static public synchronized boolean hasParameterSet(String key){
-        return getSharedPreferences().contains(key);
-
-    }
 }

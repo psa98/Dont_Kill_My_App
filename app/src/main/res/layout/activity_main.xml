@@ -13,6 +13,19 @@
         android:onClick="clearEvents"
         tools:ignore="HardcodedText" />
 
+    <EditText
+        android:id="@+id/skippedList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:ellipsize="end"
+        android:gravity="top"
+        android:importantForAutofill="no"
+        android:inputType="none"
+        android:scrollbars="vertical"
+        android:textSize="12sp"
+        tools:ignore="LabelFor" />
+
     <CheckBox
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -36,17 +49,12 @@
         android:importantForAutofill="no"
         tools:ignore="LabelFor" />
 
-    <EditText
-        android:id="@+id/skppedList"
+    <TextView
+        android:id="@+id/lastEvent"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2"
-        android:ellipsize="end"
-        android:gravity="top"
-        android:importantForAutofill="no"
-        android:inputType="none"
-        android:scrollbars="vertical"
-        android:textSize="12sp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
         tools:ignore="LabelFor" />
+
 
 </LinearLayout>

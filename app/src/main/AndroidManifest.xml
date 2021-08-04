@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="c.ponom.survivalistapplication">
-
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETE"/>
-
-
     <application
         android:name=".App"
         android:allowBackup="false"
@@ -15,11 +12,13 @@
         <activity android:name=".InfoActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <receiver android:name=".KeepAliveReceiver"
+        <receiver
+            android:name=".lifekeeper.KeepAliveReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -28,10 +27,19 @@
                 <action android:name="android.intent.action.BATTERY_CHANGED" />
                 <action android:name="android.os.action.DEVICE_IDLE_MODE_CHANGED" />
                 <action android:name="android.os.action.ACTION_POWER_SAVE_MODE_CHANGED" />
-            </intent-filter>
 
+            </intent-filter>
         </receiver>
 
+        <service
+            android:name=".BackgroundService"
+            android:enabled="true"
+            android:exported="false" />
     </application>
+
+    <uses-permission
+        android:name="android.permission.RECEIVE_BOOT_COMPLETE"
+        tools:ignore="ManifestOrder" />
+
 
 </manifest>

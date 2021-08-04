@@ -1,4 +1,4 @@
-package c.ponom.survivalistapplication;
+package c.ponom.survivalistapplication.lifekeeper;
 
 import android.content.Context;
 
@@ -8,6 +8,8 @@ import androidx.work.WorkerParameters;
 
 import java.util.Set;
 
+import c.ponom.survivalistapplication.Logger;
+
 
 public class RelaunchWorkRequest extends Worker {
 
@@ -16,14 +18,9 @@ public class RelaunchWorkRequest extends Worker {
         super(appContext, workerParams);
     }
 
-
-
-
     @NonNull
     @Override
     public Result doWork() {
-
-        // задача воркера  - рестарт нового одноразового
 
         Set<String> tags = getTags();
         String tagString = "Unknown!";
@@ -35,9 +32,9 @@ public class RelaunchWorkRequest extends Worker {
             break;
         }
 
-        App.registerWorkerEvent("type=" + tagString + " seconds");
+        Logger.registerWorkerEvent("type=" + tagString + " seconds");
         int period = Integer.parseInt(tagString);
-        App.launchRepeatingWorkRequest(period);
+        LifeKeeper.launchRepeatingWorkRequest(period);
         return Result.success();
 
     }
