@@ -21,7 +21,7 @@ import static c.ponom.survivalistapplication.model.SharedPrefsRepository.savePar
 public class Logger {
 
 
-    private static final long EVENT_WAS_SKIPPED_TIME = 120;
+    private static final long EVENT_WAS_SKIPPED_TIME = 180;
     public static MutableLiveData<String> liveEventsList = new MutableLiveData<>();
     public static MutableLiveData<String> liveSkippedEventsList = new MutableLiveData<>();
 
@@ -45,11 +45,11 @@ public class Logger {
 
     private static void testForSkippedEvents() {
         Date currentTimeDate = new Date();
-        Date lastEventDate = null;
+        Date lastEventDate = new Date();
         if (SharedPrefsRepository.hasParameterSet("lastEvent")) {
             lastEventDate.setTime(getParameterLong("lastEvent"));
             SharedPrefsRepository.saveParameter(currentTimeDate.getTime(), "lastEvent", LONG);
-        } else lastEventDate = new Date();
+        }
         long secondsBetween = currentTimeDate.getTime() / 1000 - lastEventDate.getTime() / 1000;
         if (secondsBetween > EVENT_WAS_SKIPPED_TIME) {
             String oldSkippedEventsList = getParameterString("skipped");
