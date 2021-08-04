@@ -37,7 +37,6 @@ public class InfoActivity extends AppCompatActivity {
 
         LiveData<String> eventList = Logger.liveEventsList;
         LiveData<String> skippedEventList = Logger.liveSkippedEventsList;
-
         eventList.observe(this, newList -> {
             if (refreshingLogs) showAndScrollToEnd(newList);
         });

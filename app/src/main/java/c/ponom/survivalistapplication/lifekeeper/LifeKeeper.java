@@ -82,8 +82,6 @@ public final class LifeKeeper {
     public void pause(Context context) {
         running = false;
         unregisterReceivers(context);
-        // не тестил пока!
-        // todo это не остановит автоперезапуск приложения если не мутить с сохр.параметрами
         workManager.cancelAllWork();
     }
 
