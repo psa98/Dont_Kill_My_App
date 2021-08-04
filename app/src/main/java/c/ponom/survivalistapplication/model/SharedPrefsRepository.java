@@ -1,4 +1,4 @@
-package c.ponom.survivalistapplication;
+package c.ponom.survivalistapplication.model;
 
 import android.annotation.SuppressLint;
 
@@ -6,7 +6,7 @@ import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Map;
 
-import static c.ponom.survivalistapplication.App.getSharedPreferences;
+import static c.ponom.survivalistapplication.Application.getSharedPreferences;
 
 
 @SuppressWarnings({"unused", "RedundantSuppression"})
@@ -25,7 +25,7 @@ public class SharedPrefsRepository {
     }
 
     @SuppressWarnings("FieldCanBeLocal")
-    enum DataType {
+    public enum DataType {
 
         BOOLEAN(false, Boolean.TYPE),
         FLOAT(0f, Float.TYPE),
@@ -85,5 +85,6 @@ public class SharedPrefsRepository {
     static  public synchronized float getParameterFloat (String key){
         return getSharedPreferences().getFloat(key, (float) DataType.FLOAT.defaultValue);
     }
+
 
 }

@@ -14,8 +14,9 @@ import java.util.Date;
 import java.util.Locale;
 
 import c.ponom.survivalistapplication.lifekeeper.LifeKeeper;
+import c.ponom.survivalistapplication.model.SharedPrefsRepository;
 
-import static c.ponom.survivalistapplication.SharedPrefsRepository.DataType.STRING;
+import static c.ponom.survivalistapplication.model.SharedPrefsRepository.DataType.STRING;
 
 @SuppressLint("SetTextI18n")
 public class InfoActivity extends AppCompatActivity {

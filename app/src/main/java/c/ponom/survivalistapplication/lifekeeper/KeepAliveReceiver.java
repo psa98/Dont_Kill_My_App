@@ -5,9 +5,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.PowerManager;
-import android.util.Log;
 
-import c.ponom.survivalistapplication.App;
+import c.ponom.survivalistapplication.Application;
 
 import static android.content.Intent.ACTION_BATTERY_CHANGED;
 import static android.content.Intent.ACTION_BOOT_COMPLETED;
@@ -21,10 +20,11 @@ public class KeepAliveReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+
+        // todo тут ничего этого не будет в проде
         switch (intent.getAction()) {
             case ACTION_BOOT_COMPLETED:
                 registerBroadcastEvent(" Rebooted, auto launched ");
-                Log.i("!!! DON'T KILL", "Don't kill my app - restarted after");
                 break;
             case ACTION_TIME_TICK:
                 registerBroadcastEvent(" On Tick Event ");
@@ -34,7 +34,7 @@ public class KeepAliveReceiver extends BroadcastReceiver {
                 break;
             case ACTION_POWER_SAVE_MODE_CHANGED:
             case ACTION_DEVICE_IDLE_MODE_CHANGED:
-                registerBroadcastEvent(" Power save mode changed:"
+                registerBroadcastEvent(" Power mode "
                         + powerState());
                 registerInSkippedLogEvent(" Power mode " + powerState());
         }
@@ -45,7 +45,7 @@ public class KeepAliveReceiver extends BroadcastReceiver {
     }
 
     private String powerState() {
-        PowerManager pm = (PowerManager) App.getAppContext().getSystemService(Context.POWER_SERVICE);
+        PowerManager pm = (PowerManager) Application.getAppContext().getSystemService(Context.POWER_SERVICE);
         return pm.isDeviceIdleMode() ? " doze  on " : " doze off ";
     }
 

@@ -6,12 +6,36 @@
     tools:context=".InfoActivity"
     android:orientation="vertical">
 
+    <EditText
+        android:id="@+id/logList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3"
+        android:ellipsize="end"
+        android:gravity="top"
+        android:importantForAutofill="no"
+        android:inputType="none"
+        android:scrollbars="vertical"
+        android:textSize="12sp"
+        tools:ignore="LabelFor" />
+
     <Button
         android:text="Clear events"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="clearEvents"
         tools:ignore="HardcodedText" />
+
+
+    <CheckBox
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:enabled="true"
+        android:onClick="checkBoxClicked"
+        android:text="Auto refresh logs"
+        tools:ignore="HardcodedText" />
+
 
     <EditText
         android:id="@+id/skippedList"
@@ -26,28 +50,6 @@
         android:textSize="12sp"
         tools:ignore="LabelFor" />
 
-    <CheckBox
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:checked="true"
-        android:enabled="true"
-        android:onClick="checkBoxClicked"
-        android:text="Auto refresh logs"
-        tools:ignore="HardcodedText" />
-
-
-    <EditText
-        android:layout_height="0dp"
-        android:inputType="none"
-        android:ellipsize="end"
-        android:scrollbars="vertical"
-        android:id="@+id/logList"
-        android:textSize="12sp"
-        android:layout_width="match_parent"
-        android:layout_weight="3"
-        android:gravity="top"
-        android:importantForAutofill="no"
-        tools:ignore="LabelFor" />
 
     <TextView
         android:id="@+id/lastEvent"

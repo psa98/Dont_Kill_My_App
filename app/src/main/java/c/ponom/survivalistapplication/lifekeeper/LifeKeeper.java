@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
@@ -19,7 +18,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-import c.ponom.survivalistapplication.App;
 import c.ponom.survivalistapplication.Logger;
 
 import static android.content.Intent.ACTION_BATTERY_CHANGED;
@@ -84,7 +82,7 @@ public final class LifeKeeper {
     public void pause(Context context) {
         running = false;
         unregisterReceivers(context);
-        // нет тестил пока!
+        // не тестил пока!
         // todo это не остановит автоперезапуск приложения если не мутить с сохр.параметрами
         workManager.cancelAllWork();
     }
@@ -93,7 +91,6 @@ public final class LifeKeeper {
      *
      */
     void onIntentEvent(Intent intent) {
-        Log.i(App.TAG, "onIntentEvent: " + intent.getAction());
 
     }
 
@@ -149,11 +146,7 @@ public final class LifeKeeper {
 
     }
 
-    /* пока убрано в приватные - это слишком опасно, оно потрет и поломает все обсерверы*/
-    private synchronized void unsubscribeOnAllEvents() {
-        subscriptions.clear();
 
-    }
 
     private void registerReceivers(Context context) {
 
@@ -168,7 +161,7 @@ public final class LifeKeeper {
     }
 
     private void launchTimerTask() {
-        timer.cancel(); //на всякий случай отменяем все старые задачи, и создаем новый, старый соберет сборщик
+        timer.cancel();
         timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
