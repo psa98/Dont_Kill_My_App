@@ -11,7 +11,7 @@ public abstract class BackgroundWork {
      * observe forever лайфдаты через LifeKeeper.subscribe..., выполнить другие однкратные действия
      * метод так же вызывается при
      */
-    public abstract void backgroundProcessor();
+    public abstract void backgroundProcessorSetup();
 
 /*
     public static void startLifeKeeper(Context context) {

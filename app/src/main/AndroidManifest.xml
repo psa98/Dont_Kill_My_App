@@ -3,6 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="c.ponom.survivalistapplication">
 
+    <uses-permission
+        android:name="android.permission.RECEIVE_BOOT_COMPLETE"
+        tools:ignore="ManifestOrder" />
+
     <application
         android:name=".Application"
         android:allowBackup="false"
@@ -35,9 +39,7 @@
 
     </application>
 
-    <uses-permission
-        android:name="android.permission.RECEIVE_BOOT_COMPLETE"
-        tools:ignore="ManifestOrder" />
+
 
 
 </manifest>

@@ -8,22 +8,22 @@ import c.ponom.survivalistapplication.lifekeeper.LifeKeeper;
 import static c.ponom.survivalistapplication.Application.TAG;
 import static c.ponom.survivalistapplication.model.SharedPrefsRepository.getParameterString;
 
-public class MyBackGroundWork extends BackgroundWork {
+public class MyBackgroundWork extends BackgroundWork {
 
 
     /**
-     * если переопределить метод тут можно, к примеру, инициировать для последедующего обзора
+     * если переопределив метод тут можно, к примеру, инициировать для последедующего обзора
      * observe forever лайфдаты через LifeKeeper.subscribe..., выполнить другие однократные действия
      * метод так же вызывается при ребуте  если в onCreate Application класса есть
-     * MyBackGroundWork myBackGroundWork = new MyBackGroundWork();
+     * MyBackgroundWork myBackGroundWork = new MyBackgroundWork();
      * myBackGroundWork.launchLifeKeeper(this);
-     * myBackGroundWork.initBackgroundWorkProcessor();
+     * myBackGroundWork.backgroundProcessorSetup();
      * <p>
      * можно оставить метод пустым и просто обсервить в нужной точке кода лайфдаты,
      * полученные от LifeKeeper после его ручного запуска статическим методом
      */
     @Override
-    public void backgroundProcessor() {
+    public void backgroundProcessorSetup() {
         LifeKeeper.getInstance().subscribeOnEvents()
                 .observeForever(time -> Log.e(TAG, "detected event in service "));
 

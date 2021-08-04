@@ -24,9 +24,9 @@ public class Application extends android.app.Application {
         super.onCreate();
         thisApplication = this;
         sharedPreferences = getSharedPreferences("globalSettings", Context.MODE_PRIVATE);
-        MyBackGroundWork myBackGroundWork = new MyBackGroundWork();
+        MyBackgroundWork myBackGroundWork = new MyBackgroundWork();
         myBackGroundWork.launchLifeKeeper(this);
-        myBackGroundWork.backgroundProcessor();
+        myBackGroundWork.backgroundProcessorSetup();
     }
 }
 
