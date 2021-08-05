@@ -31,17 +31,19 @@ public final class LifeKeeper {
     private static final long FREQUENT_REQUEST_PERIOD = 55;
     private static final long INFREQUENT_REQUEST_PERIOD = 240;
     private static final long MINIMUM_PERIOD = 60;
-    private static final long TIMER_TASK_PERIOD = 30;
-    public static WorkManager workManager;
+    private static final long TIMER_TASK_PERIOD = 15;
+    private  WorkManager workManager;
     private static volatile LifeKeeper instance;
-    private static KeepAliveReceiver keepAliveReceiver;
-    //его тоже сделать синглтоном и получать через гетинстанс
+    private final KeepAliveReceiver keepAliveReceiver;
+    //его тоже сделать синглтоном и получать через гетинстанс?
+
     private final ArrayList<MutableLiveData<Long>> subscriptions = new ArrayList<>();
     private final ArrayList<PeriodicSubscription> periodicSubscriptions = new ArrayList<>();
-    Timer timer = new Timer();
+    private Timer timer = new Timer();
     private boolean running = false;
 
     private LifeKeeper() {
+        keepAliveReceiver = new KeepAliveReceiver();
 
     }
 
@@ -49,12 +51,12 @@ public final class LifeKeeper {
     public synchronized static LifeKeeper getInstance() {
         if (instance == null) {
             instance = new LifeKeeper();
-            keepAliveReceiver = new KeepAliveReceiver();
+
         }
         return instance;
     }
 
-    public static void launchRepeatingWorkRequest(long period) {
+    public void launchRepeatingWorkRequest(long period) {
         OneTimeWorkRequest singleWorkRequest =
                 new OneTimeWorkRequest.Builder(RelaunchWorkRequest.class)
                         .setInitialDelay(period, TimeUnit.SECONDS)
@@ -92,7 +94,7 @@ public final class LifeKeeper {
 
     }
 
-    void emitEvents() { // todo - остальсь проверить отписку и возможно добавить TimerTask
+    void emitEvents() { // todo - остальсь проверить отписку
         if (!running) return;
         long currentTimestamp = new Date().getTime();
         for (MutableLiveData<Long> liveData :
@@ -117,7 +119,7 @@ public final class LifeKeeper {
 
     }
 
-    public synchronized LiveData<Long> subscribeOnEvents() {
+    public synchronized LiveData<Long> subscribeOnAllEvents() {
         MutableLiveData<Long> liveData = new MutableLiveData<>();
         subscriptions.add(liveData);
         return liveData;
@@ -137,17 +139,16 @@ public final class LifeKeeper {
         subscriptions.remove((MutableLiveData<Long>) liveData); // протестить как оно вообще
     }
 
-    public synchronized void unsubscribePeriodic(LiveData<Long> liveData) {
+    public synchronized void unsubscribePeriodicEvents(LiveData<Long> liveData) {
 
         PeriodicSubscription periodicSubscription = new PeriodicSubscription((MutableLiveData<Long>) liveData);
-        periodicSubscriptions.remove(periodicSubscription); //тестить!
+        periodicSubscriptions.remove(periodicSubscription); //todo тестить!
 
     }
 
 
 
     private void registerReceivers(Context context) {
-
         context.registerReceiver(keepAliveReceiver, new IntentFilter(ACTION_TIME_TICK));
         context.registerReceiver(keepAliveReceiver, new IntentFilter(ACTION_BATTERY_CHANGED));
         context.registerReceiver(keepAliveReceiver, new IntentFilter(ACTION_POWER_SAVE_MODE_CHANGED));
@@ -158,7 +159,7 @@ public final class LifeKeeper {
         context.unregisterReceiver(keepAliveReceiver);
     }
 
-    private void launchTimerTask() {
+    void launchTimerTask() {
         timer.cancel();
         timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -188,7 +189,6 @@ public final class LifeKeeper {
             liveData = new MutableLiveData<>();
             periodicity = seconds;
         }
-
 
         @Override
         public boolean equals(@Nullable Object obj) {

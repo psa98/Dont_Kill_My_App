@@ -24,13 +24,14 @@ public class MyBackgroundWork extends BackgroundWork {
      */
     @Override
     public void backgroundProcessorSetup() {
-        LifeKeeper.getInstance().subscribeOnEvents()
+        LifeKeeper lifeKeeper = LifeKeeper.getInstance();
+        lifeKeeper.subscribeOnAllEvents()
                 .observeForever(time -> Log.e(TAG, "detected event in service "));
 
-        LifeKeeper.getInstance().subscribeOnPeriodicEvents(60)
+        lifeKeeper.subscribeOnPeriodicEvents(60)
                 .observeForever(time -> Log.e(TAG, "detected periodic event - 60 s in service"));
 
-        LifeKeeper.getInstance().subscribeOnPeriodicEvents(90)
+        lifeKeeper.subscribeOnPeriodicEvents(90)
                 .observeForever(time -> Log.e(TAG, "detected periodic event - 90 s in service "));
 
 

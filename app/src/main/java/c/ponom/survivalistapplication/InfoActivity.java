@@ -21,9 +21,8 @@ import static c.ponom.survivalistapplication.model.SharedPrefsRepository.DataTyp
 @SuppressLint("SetTextI18n")
 public class InfoActivity extends AppCompatActivity {
 
-    EditText list, skippedList;
-    boolean refreshingLogs = true;
-    LiveData<Long> eventBus;
+    private EditText list, skippedList;
+    private boolean refreshingLogs = true;
     private TextView lastEvent;
 
     @Override
@@ -41,7 +40,7 @@ public class InfoActivity extends AppCompatActivity {
             if (refreshingLogs) showAndScrollToEnd(newList);
         });
         skippedEventList.observe(this, newList -> showSkippedAndScrollToEnd(newList));
-        eventBus = LifeKeeper.getInstance().subscribeOnEvents();
+        LiveData<Long> eventBus = LifeKeeper.getInstance().subscribeOnAllEvents();
         eventBus.observe(this, value -> {
             if (value == null) return;
             Date date = new Date();

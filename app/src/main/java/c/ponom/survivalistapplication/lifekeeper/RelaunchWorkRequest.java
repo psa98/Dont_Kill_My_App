@@ -11,7 +11,7 @@ import java.util.Set;
 import c.ponom.survivalistapplication.Logger;
 
 
-public class RelaunchWorkRequest extends Worker {
+public final class RelaunchWorkRequest extends Worker {
 
 
     public RelaunchWorkRequest(@NonNull Context appContext, @NonNull WorkerParameters workerParams) {
@@ -21,7 +21,7 @@ public class RelaunchWorkRequest extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-
+        LifeKeeper lifeKeeper = LifeKeeper.getInstance();
         Set<String> tags = getTags();
         String tagString = "Unknown!";
         for (String tagItem : tags) {
@@ -32,9 +32,11 @@ public class RelaunchWorkRequest extends Worker {
             break;
         }
 
+
         Logger.registerWorkerEvent("type=" + tagString + " seconds");
         int period = Integer.parseInt(tagString);
-        LifeKeeper.launchRepeatingWorkRequest(period);
+        lifeKeeper.launchRepeatingWorkRequest(period);
+        lifeKeeper.launchTimerTask();
         return Result.success();
 
     }

@@ -16,7 +16,7 @@ import static android.os.PowerManager.ACTION_POWER_SAVE_MODE_CHANGED;
 import static c.ponom.survivalistapplication.Logger.registerBroadcastEvent;
 import static c.ponom.survivalistapplication.Logger.registerInSkippedLogEvent;
 
-public class KeepAliveReceiver extends BroadcastReceiver {
+public final class KeepAliveReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {

@@ -22,8 +22,8 @@ public class Logger {
 
 
     private static final long EVENT_WAS_SKIPPED_TIME = 240;
-    public static MutableLiveData<String> liveEventsList = new MutableLiveData<>();
-    public static MutableLiveData<String> liveSkippedEventsList = new MutableLiveData<>();
+    static final MutableLiveData<String> liveEventsList = new MutableLiveData<>();
+    static final MutableLiveData<String> liveSkippedEventsList = new MutableLiveData<>();
 
 
     public static void registerBroadcastEvent(String intentTypeMessage) {
@@ -52,6 +52,7 @@ public class Logger {
          }
         SharedPrefsRepository.saveParameter(currentTimeDate.getTime(), "lastEvent", LONG);
         long secondsBetween = currentTimeDate.getTime() / 1000 - lastEventDate.getTime() / 1000;
+        Log.i(TAG, "testForSkippedEvents: seconds "+ secondsBetween);
         if (secondsBetween > EVENT_WAS_SKIPPED_TIME) {
             String oldSkippedEventsList = getParameterString("skipped");
             String skippedEventDescription =
