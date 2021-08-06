@@ -89,6 +89,13 @@ public class Logger {
         return new SimpleDateFormat("dd/MM  HH:mm:ss",
                 Locale.getDefault()).format(date);
     }
+
+    public static void refreshLists() {
+        String oldEventsList = getParameterString("events");
+        liveEventsList.postValue(oldEventsList);
+        String skippedLogString = getParameterString("skipped");
+        liveSkippedEventsList.postValue(skippedLogString);
+    }
 }
 
 

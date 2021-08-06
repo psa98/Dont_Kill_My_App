@@ -25,6 +25,8 @@ public class InfoActivity extends AppCompatActivity {
     private boolean refreshingLogs = true;
     private TextView lastEvent;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -33,6 +35,7 @@ public class InfoActivity extends AppCompatActivity {
         list = findViewById(R.id.logList);
         skippedList = findViewById(R.id.skippedList);
         lastEvent = findViewById(R.id.lastEvent);
+
 
         LiveData<String> eventList = Logger.liveEventsList;
         LiveData<String> skippedEventList = Logger.liveSkippedEventsList;
@@ -47,7 +50,12 @@ public class InfoActivity extends AppCompatActivity {
             date.setTime(value);
             lastEvent.setText(String.format(Locale.getDefault(), "Last event%tT", date));
         });
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Logger.refreshLists();
     }
 
     private void showAndScrollToEnd(String newList) {

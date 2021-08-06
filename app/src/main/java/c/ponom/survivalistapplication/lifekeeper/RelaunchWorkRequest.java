@@ -8,8 +8,6 @@ import androidx.work.WorkerParameters;
 
 import java.util.Set;
 
-import c.ponom.survivalistapplication.Logger;
-
 
 public final class RelaunchWorkRequest extends Worker {
 
@@ -32,8 +30,6 @@ public final class RelaunchWorkRequest extends Worker {
             break;
         }
 
-
-        Logger.registerWorkerEvent("type=" + tagString + " seconds");
         int period = Integer.parseInt(tagString);
         lifeKeeper.launchRepeatingWorkRequest(period);
         lifeKeeper.launchTimerTask();

@@ -12,7 +12,7 @@ public class MyBackgroundWork extends BackgroundWork {
 
 
     /**
-     * если переопределив метод тут можно, к примеру, инициировать для последедующего обзора
+     *  переопределив метод тут можно, к примеру, инициировать для последедующего обзора
      * observe forever лайфдаты через LifeKeeper.subscribe..., выполнить другие однократные действия
      * метод так же вызывается при ребуте  если в onCreate Application класса есть
      * MyBackgroundWork myBackGroundWork = new MyBackgroundWork();
@@ -29,10 +29,10 @@ public class MyBackgroundWork extends BackgroundWork {
                 .observeForever(time -> Log.e(TAG, "detected event in service "));
 
         lifeKeeper.subscribeOnPeriodicEvents(60)
-                .observeForever(time -> Log.e(TAG, "detected periodic event - 60 s in service"));
+                .observeForever(time -> Log.e(TAG, "detected periodic event - 60 s"));
 
         lifeKeeper.subscribeOnPeriodicEvents(90)
-                .observeForever(time -> Log.e(TAG, "detected periodic event - 90 s in service "));
+                .observeForever(time -> Log.e(TAG, "detected periodic event - 90 s"));
 
 
         String oldSkippedEventsList = getParameterString("skipped");
