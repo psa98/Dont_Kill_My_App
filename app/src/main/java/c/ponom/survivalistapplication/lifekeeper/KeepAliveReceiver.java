@@ -18,6 +18,19 @@ import static c.ponom.survivalistapplication.Logger.registerInSkippedLogEvent;
 
 public final class KeepAliveReceiver extends BroadcastReceiver {
 
+    private volatile static KeepAliveReceiver INSTANCE;
+
+    private KeepAliveReceiver() {
+    }
+
+    public synchronized static KeepAliveReceiver getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new KeepAliveReceiver();
+
+        }
+        return INSTANCE;
+    }
+
     @Override
     public void onReceive(Context context, Intent intent) {
 

@@ -27,18 +27,17 @@ public final class RelaunchWorkRequest extends Worker {
     public Result doWork() {
         LifeKeeper lifeKeeper = LifeKeeper.getInstance();
         Set<String> tags = getTags();
-        String tagString = "Unknown!";
+        String tagString = "";
         for (String tagItem : tags) {
-
-
-            //todo  грубый хак для передачи числа в тэгах,
-            // заменить тэг на что то вроде seconds=xxx,брать оттуда
             if (!tagItem.startsWith("seconds=")) continue;
             tagString = tagItem.substring(8);
             break;
         }
 
         int period = Integer.parseInt(tagString);
+        if (tagString.isEmpty()) return Result.success();
+        // что-то пошло не так, в теге нет правильного времени, перезапуска не будет
+
         Logger.registerWorkerEvent(format("Worker event %d s", period));
         lifeKeeper.launchRepeatingWorkRequest(period);
         lifeKeeper.launchTimerTask();

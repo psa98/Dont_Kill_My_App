@@ -26,13 +26,13 @@ import static android.os.PowerManager.ACTION_POWER_SAVE_MODE_CHANGED;
 
 
 @SuppressWarnings({"unused", "RedundantSuppression"})
-public  class LifeKeeper {
+public final class LifeKeeper {
     private static final long FREQUENT_REQUEST_PERIOD = 55;
     private static final long INFREQUENT_REQUEST_PERIOD = 240;
     private static final long MINIMUM_PERIOD = 60;
     private static final long TIMER_TASK_PERIOD = 15;
     private  WorkManager workManager;
-    private static volatile LifeKeeper instance;
+    private static volatile LifeKeeper INSTANCE;
     private final KeepAliveReceiver keepAliveReceiver;
     //его тоже сделать синглтоном и получать через гетинстанс?
 
@@ -40,20 +40,22 @@ public  class LifeKeeper {
     private final ArrayList<PeriodicSubscription> periodicSubscriptions = new ArrayList<>();
     private Timer timer = new Timer();
     private boolean running = false;
+    LifeKeeperEventsListener eventListener;
 
 
-     LifeKeeper() {
-        keepAliveReceiver = new KeepAliveReceiver();
+
+     private LifeKeeper() {
+        keepAliveReceiver = KeepAliveReceiver.getInstance();
 
     }
 
 
     public synchronized static LifeKeeper getInstance() {
-        if (instance == null) {
-            instance = new LifeKeeper();
+        if (INSTANCE == null) {
+            INSTANCE = new LifeKeeper();
 
         }
-        return instance;
+        return INSTANCE;
     }
 
     public final void launchRepeatingWorkRequest(long period) {
@@ -95,7 +97,9 @@ public  class LifeKeeper {
         onEachEvent(currentTimestamp);
         for (MutableLiveData<Long> liveData :
                 subscriptions) {
-            if (liveData != null) liveData.setValue(currentTimestamp);
+            if (liveData != null) {
+                setLiveDataFromMain(currentTimestamp, liveData);
+            }
         }
         PeriodicSubscription liveDataPeriodic;
         for (int i = 0; i < periodicSubscriptions.size(); i++) {
@@ -104,7 +108,7 @@ public  class LifeKeeper {
             if (liveDataPeriodic.liveData != null &&
                     ((currentTimestamp - liveDataPeriodic.previousSubscriptionEventTimestamp)
                             >= liveDataPeriodic.periodicity * 1000)) {
-                liveDataPeriodic.liveData.setValue(currentTimestamp);
+                setLiveDataFromMain(currentTimestamp, liveDataPeriodic.liveData);
                 Logger.appendEvent("\n" + Logger.formattedTimeStamp()
                         + " Periodic event #" + (i + 1) + " " + liveDataPeriodic.periodicity + " s");
                 liveDataPeriodic.previousSubscriptionEventTimestamp = currentTimestamp;
@@ -112,6 +116,19 @@ public  class LifeKeeper {
             }
         }
         launchTimerTask();
+
+    }
+
+    private void setLiveDataFromMain(long currentTimestamp, MutableLiveData<Long> liveData) {
+
+        final Looper mainLooper = Looper.getMainLooper();
+        if (mainLooper.isCurrentThread())
+            liveData.setValue(currentTimestamp);
+        else{
+            // переброска исполнения для воркеров в main thread, иначе LiveData.set не работает
+            Handler handler = new Handler(mainLooper);
+            handler.post(() -> liveData.setValue(currentTimestamp));
+        }
 
     }
 
@@ -203,12 +220,20 @@ public  class LifeKeeper {
         }
     }
 
-    /*
-    * переопределите класс и метод  если надо получать события максимально часто и  без обработки
-    *
-    */
-    void onEachEvent(long timestamp){
-
+    public void setEventListener(LifeKeeperEventsListener eventListener) {
+        this.eventListener = eventListener;
     }
+
+    public interface LifeKeeperEventsListener {
+        void onEvent(long timestamp);
+    }
+
+
+    private   void onEachEvent(long timestamp){
+    if (eventListener!=null) eventListener.onEvent(timestamp);
+    }
+
+
+
 
 }

@@ -50,7 +50,7 @@ public class Logger {
         Date lastEventDate = new Date();
         if (SharedPrefsRepository.hasParameterSet("lastEvent")) {
             lastEventDate.setTime(getParameterLong("lastEvent"));
-            if (debugMode) Log.e(TAG, "testForSkippedEvents: "+ lastEventDate +" / "+currentTimeDate );
+            if (debugMode) Log.e(TAG, "testForSkippedEvents: "+ lastEventDate +" / \n "+currentTimeDate );
          }
         SharedPrefsRepository.saveParameter(currentTimeDate.getTime(), "lastEvent", LONG);
         long secondsBetween = currentTimeDate.getTime() / 1000 - lastEventDate.getTime() / 1000;
