@@ -12,6 +12,7 @@ import java.util.Locale;
 import c.ponom.survivalistapplication.model.SharedPrefsRepository;
 
 import static c.ponom.survivalistapplication.Application.TAG;
+import static c.ponom.survivalistapplication.Application.debugMode;
 import static c.ponom.survivalistapplication.model.SharedPrefsRepository.DataType.LONG;
 import static c.ponom.survivalistapplication.model.SharedPrefsRepository.DataType.STRING;
 import static c.ponom.survivalistapplication.model.SharedPrefsRepository.getParameterLong;
@@ -26,6 +27,7 @@ public class Logger {
     static final MutableLiveData<String> liveSkippedEventsList = new MutableLiveData<>();
 
 
+
     public static void registerBroadcastEvent(String intentTypeMessage) {
         String eventString = "\n" + formattedTimeStamp() + intentTypeMessage;
         appendEvent(eventString);
@@ -35,12 +37,12 @@ public class Logger {
         String oldEventsList = getParameterString("events");
         if (oldEventsList.length() > 200000) oldEventsList =
                 // режем лог - размер SP ограничен
-                oldEventsList.substring(oldEventsList.length() - 10000);
+                oldEventsList.substring(oldEventsList.length() - 30000);
         String logString = oldEventsList + eventString;
         saveParameter(logString, "events", STRING);
         liveEventsList.postValue(logString);
         testForSkippedEvents();
-        Log.i(TAG, "LiveKeeper event:");
+        if (debugMode)Log.i(TAG, "LiveKeeper event:");
     }
 
     private static void testForSkippedEvents() {
@@ -48,19 +50,19 @@ public class Logger {
         Date lastEventDate = new Date();
         if (SharedPrefsRepository.hasParameterSet("lastEvent")) {
             lastEventDate.setTime(getParameterLong("lastEvent"));
-            Log.e(TAG, "testForSkippedEvents: "+ lastEventDate +" / "+currentTimeDate );
+            if (debugMode) Log.e(TAG, "testForSkippedEvents: "+ lastEventDate +" / "+currentTimeDate );
          }
         SharedPrefsRepository.saveParameter(currentTimeDate.getTime(), "lastEvent", LONG);
         long secondsBetween = currentTimeDate.getTime() / 1000 - lastEventDate.getTime() / 1000;
-        Log.i(TAG, "testForSkippedEvents: seconds "+ secondsBetween);
+        if (debugMode) Log.i(TAG, "testForSkippedEvents: seconds "+ secondsBetween);
         if (secondsBetween > EVENT_WAS_SKIPPED_TIME) {
             String oldSkippedEventsList = getParameterString("skipped");
             String skippedEventDescription =
-                    "No timer events registered between " +
+                    "\nNo timer events registered between " +
                             formatDate(lastEventDate) +
                             " and  " +
                             formatDate(currentTimeDate) +
-                            " for " + secondsBetween + "s \n";
+                            " for " + secondsBetween + "s";
             String skippedLogString = oldSkippedEventsList + skippedEventDescription;
             saveParameter(skippedLogString, "skipped", STRING);
             liveSkippedEventsList.postValue(skippedLogString);

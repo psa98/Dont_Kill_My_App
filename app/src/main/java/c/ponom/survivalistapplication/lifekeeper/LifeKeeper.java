@@ -1,7 +1,6 @@
 package c.ponom.survivalistapplication.lifekeeper;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.Looper;
@@ -27,7 +26,7 @@ import static android.os.PowerManager.ACTION_POWER_SAVE_MODE_CHANGED;
 
 
 @SuppressWarnings({"unused", "RedundantSuppression"})
-public final class LifeKeeper {
+public  class LifeKeeper {
     private static final long FREQUENT_REQUEST_PERIOD = 55;
     private static final long INFREQUENT_REQUEST_PERIOD = 240;
     private static final long MINIMUM_PERIOD = 60;
@@ -42,7 +41,8 @@ public final class LifeKeeper {
     private Timer timer = new Timer();
     private boolean running = false;
 
-    private LifeKeeper() {
+
+     LifeKeeper() {
         keepAliveReceiver = new KeepAliveReceiver();
 
     }
@@ -56,17 +56,16 @@ public final class LifeKeeper {
         return instance;
     }
 
-    public void launchRepeatingWorkRequest(long period) {
+    public final void launchRepeatingWorkRequest(long period) {
         OneTimeWorkRequest singleWorkRequest =
                 new OneTimeWorkRequest.Builder(RelaunchWorkRequest.class)
                         .setInitialDelay(period, TimeUnit.SECONDS)
-                        .addTag("" + period)
-                        // tag будет содержать один элемент, равный периоду (в строке)
+                        .addTag("seconds=" + period)
                         .build();
         workManager.enqueue(singleWorkRequest);
     }
 
-    public void start(Context context) {
+    public final void start(Context context) {
         running = true;
         registerReceivers(context);
         workManager = WorkManager.getInstance(context);
@@ -81,22 +80,19 @@ public final class LifeKeeper {
      *
      */
 
-    public void pause(Context context) {
+    public final  void pause(Context context) {
         running = false;
         unregisterReceivers(context);
         workManager.cancelAllWork();
     }
 
-    /*
-     *
-     */
-    void onIntentEvent(Intent intent) {
 
-    }
+    final void emitEvents() {
 
-    void emitEvents() { // todo - остальсь проверить отписку
         if (!running) return;
+
         long currentTimestamp = new Date().getTime();
+        onEachEvent(currentTimestamp);
         for (MutableLiveData<Long> liveData :
                 subscriptions) {
             if (liveData != null) liveData.setValue(currentTimestamp);
@@ -119,13 +115,24 @@ public final class LifeKeeper {
 
     }
 
-    public synchronized LiveData<Long> subscribeOnAllEvents() {
+    public final synchronized LiveData<Long> subscribeOnAllEvents() {
         MutableLiveData<Long> liveData = new MutableLiveData<>();
         subscriptions.add(liveData);
         return liveData;
     }
 
-    public synchronized LiveData<Long> subscribeOnPeriodicEvents(long seconds) {
+    /*
+    * Данные в возвращаемой лайфдате (unix time события) обновляются при первой возможности,
+    * с максимально возможной частотой, позволяемой системой но не чаще заданного периода, и
+    * (минимум - 60 секунд).
+    * Гарантий вызова события с заданной частотй дать невозможно, система может убить или
+    * остановить приложение в любой момент. Типичные задержки вызова  (заданное время+задержка)
+    *  в doze mode по итогам тестов могут достигать 3 минут, при длительном нахождение в режиме-
+    * 20 минут. При нахождении приложеня во фронте - не более 5-15 секунд. Для китайских телефонов
+    * можно ожидать очень проблемной работы в фоне без отключения режима экономии для приложения
+    *
+    * */
+    public final synchronized LiveData<Long> subscribeOnPeriodicEvents(long seconds) {
         if (seconds < MINIMUM_PERIOD) seconds = MINIMUM_PERIOD;
         PeriodicSubscription periodicSubscription = new PeriodicSubscription(seconds);
         periodicSubscriptions.add(periodicSubscription);
@@ -133,17 +140,15 @@ public final class LifeKeeper {
 
     }
 
-    public synchronized void unsubscribeEvents(LiveData<Long> liveData) {
-
+    // todo - сделаны приватными до завершения тестирования
+    private synchronized void unsubscribeEvents(LiveData<Long> liveData) {
         //noinspection RedundantCast
         subscriptions.remove((MutableLiveData<Long>) liveData); // протестить как оно вообще
     }
 
-    public synchronized void unsubscribePeriodicEvents(LiveData<Long> liveData) {
-
+    private  synchronized void unsubscribePeriodicEvents(LiveData<Long> liveData) {
         PeriodicSubscription periodicSubscription = new PeriodicSubscription((MutableLiveData<Long>) liveData);
-        periodicSubscriptions.remove(periodicSubscription); //todo тестить!
-
+        periodicSubscriptions.remove(periodicSubscription);
     }
 
 
@@ -155,11 +160,12 @@ public final class LifeKeeper {
         context.registerReceiver(keepAliveReceiver, new IntentFilter(ACTION_DEVICE_IDLE_MODE_CHANGED));
     }
 
-    private void unregisterReceivers(Context context) {
+     private void unregisterReceivers(Context context) {
         context.unregisterReceiver(keepAliveReceiver);
     }
 
-    void launchTimerTask() {
+    final void launchTimerTask() {
+        if (!running) return;
         timer.cancel();
         timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -196,4 +202,13 @@ public final class LifeKeeper {
             return this.liveData == obj;
         }
     }
+
+    /*
+    * переопределите класс и метод  если надо получать события максимально часто и  без обработки
+    *
+    */
+    void onEachEvent(long timestamp){
+
+    }
+
 }

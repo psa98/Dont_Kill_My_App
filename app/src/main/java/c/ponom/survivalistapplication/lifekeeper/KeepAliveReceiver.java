@@ -6,13 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.PowerManager;
 
-import c.ponom.survivalistapplication.Application;
-
 import static android.content.Intent.ACTION_BATTERY_CHANGED;
 import static android.content.Intent.ACTION_BOOT_COMPLETED;
 import static android.content.Intent.ACTION_TIME_TICK;
 import static android.os.PowerManager.ACTION_DEVICE_IDLE_MODE_CHANGED;
 import static android.os.PowerManager.ACTION_POWER_SAVE_MODE_CHANGED;
+import static c.ponom.survivalistapplication.Application.getAppContext;
 import static c.ponom.survivalistapplication.Logger.formattedTimeStamp;
 import static c.ponom.survivalistapplication.Logger.registerBroadcastEvent;
 import static c.ponom.survivalistapplication.Logger.registerInSkippedLogEvent;
@@ -40,14 +39,13 @@ public final class KeepAliveReceiver extends BroadcastReceiver {
                 registerInSkippedLogEvent("\n Power mode " + powerState());
         }
 
-        LifeKeeper.getInstance().onIntentEvent(intent);
         LifeKeeper.getInstance().emitEvents();
 
     }
 
     private String powerState() {
-        PowerManager pm = (PowerManager) Application.getAppContext().getSystemService(Context.POWER_SERVICE);
-        return pm.isDeviceIdleMode() ? " doze  on " : " doze off ";
+        PowerManager pm = (PowerManager) getAppContext().getSystemService(Context.POWER_SERVICE);
+        return pm.isDeviceIdleMode() ? " doze  on \n" : " doze off \n";
     }
 
 }

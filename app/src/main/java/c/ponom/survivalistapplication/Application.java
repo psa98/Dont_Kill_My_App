@@ -3,6 +3,8 @@ package c.ponom.survivalistapplication;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import c.ponom.survivalistapplication.lifekeeper.LifeKeeper;
+
 
 public class Application extends android.app.Application {
 
@@ -10,6 +12,7 @@ public class Application extends android.app.Application {
     public static final String TAG = "LifeKeeper";
     private static SharedPreferences sharedPreferences;
     private static android.app.Application thisApplication;
+    public static final boolean debugMode = (BuildConfig.DEBUG);
 
     public static SharedPreferences getSharedPreferences() {
         return sharedPreferences;
@@ -24,8 +27,8 @@ public class Application extends android.app.Application {
         super.onCreate();
         thisApplication = this;
         sharedPreferences = getSharedPreferences("globalSettings", Context.MODE_PRIVATE);
+        LifeKeeper.getInstance().start(this);
         MyBackgroundWork myBackGroundWork = new MyBackgroundWork();
-        myBackGroundWork.launchLifeKeeper(this);
         myBackGroundWork.backgroundProcessorSetup();
     }
 }

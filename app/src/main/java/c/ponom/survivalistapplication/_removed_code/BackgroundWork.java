@@ -1,6 +1,8 @@
-package c.ponom.survivalistapplication.lifekeeper;
+package c.ponom.survivalistapplication._removed_code;
 
 import android.content.Context;
+
+import c.ponom.survivalistapplication.lifekeeper.LifeKeeper;
 
 
 @SuppressWarnings({"unused", "RedundantSuppression"})

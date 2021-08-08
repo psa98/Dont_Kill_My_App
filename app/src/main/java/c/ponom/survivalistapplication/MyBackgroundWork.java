@@ -2,37 +2,38 @@ package c.ponom.survivalistapplication;
 
 import android.util.Log;
 
-import c.ponom.survivalistapplication.lifekeeper.BackgroundWork;
 import c.ponom.survivalistapplication.lifekeeper.LifeKeeper;
 
 import static c.ponom.survivalistapplication.Application.TAG;
+import static c.ponom.survivalistapplication.Application.debugMode;
 import static c.ponom.survivalistapplication.model.SharedPrefsRepository.getParameterString;
 
-public class MyBackgroundWork extends BackgroundWork {
+public class MyBackgroundWork  {
 
 
     /**
-     *  переопределив метод тут можно, к примеру, инициировать для последедующего обзора
+     *  тут можно к примеру, инициировать для последедующего обзора
      * observe forever лайфдаты через LifeKeeper.subscribe..., выполнить другие однократные действия
      * метод так же вызывается при ребуте  если в onCreate Application класса есть
      * MyBackgroundWork myBackGroundWork = new MyBackgroundWork();
-     * myBackGroundWork.launchLifeKeeper(this);
      * myBackGroundWork.backgroundProcessorSetup();
-     * <p>
-     * можно оставить метод пустым и просто обсервить в нужной точке кода лайфдаты,
-     * полученные от LifeKeeper после его ручного запуска статическим методом
+     *
+     * Фактически данный класс  используется только для разгрузки Application от излишнего кода
      */
-    @Override
+
     public void backgroundProcessorSetup() {
         LifeKeeper lifeKeeper = LifeKeeper.getInstance();
         lifeKeeper.subscribeOnAllEvents()
-                .observeForever(time -> Log.e(TAG, "detected event in service "));
+                .observeForever(time ->{
+                    if (debugMode) Log.e(TAG, "detected event in service ");});
 
         lifeKeeper.subscribeOnPeriodicEvents(60)
-                .observeForever(time -> Log.e(TAG, "detected periodic event - 60 s"));
+                .observeForever(time ->{
+                    if (debugMode) Log.e(TAG, "detected periodic event - 60 s");});
 
         lifeKeeper.subscribeOnPeriodicEvents(90)
-                .observeForever(time -> Log.e(TAG, "detected periodic event - 90 s"));
+                .observeForever(time ->{
+                    if (debugMode) Log.e(TAG, "detected periodic event - 90 s");});
 
 
         String oldSkippedEventsList = getParameterString("skipped");
