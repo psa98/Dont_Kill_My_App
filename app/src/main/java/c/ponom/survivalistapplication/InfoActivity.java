@@ -24,6 +24,8 @@ public class InfoActivity extends AppCompatActivity {
     private EditText list, skippedList;
     private boolean refreshingLogs = true;
     private TextView lastEvent;
+    LiveData<Long> eventBus;
+    LifeKeeper lifeKeeper=LifeKeeper.getInstance();
 
 
 
@@ -42,8 +44,17 @@ public class InfoActivity extends AppCompatActivity {
         eventList.observe(this, newList -> {
             if (refreshingLogs) showAndScrollToEnd(newList);
         });
+
         skippedEventList.observe(this, newList -> showSkippedAndScrollToEnd(newList));
-        LiveData<Long> eventBus = LifeKeeper.getInstance().subscribeOnAllEvents();
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Logger.refreshLists();
+        eventBus = lifeKeeper.subscribeOnAllEvents();
         eventBus.observe(this, value -> {
             if (value == null) return;
             Date date = new Date();
@@ -52,16 +63,16 @@ public class InfoActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Logger.refreshLists();
-    }
-
     private void showAndScrollToEnd(String newList) {
         list.setText(newList);
         if (!newList.isEmpty()) list.setSelection(newList.length() - 1, newList.length());
         list.clearFocus(); // костыль для скролла - выделить посл.символ, убрать выделение
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        lifeKeeper.unsubscribeEvents(eventBus);
     }
 
     private void showSkippedAndScrollToEnd(String newList) {

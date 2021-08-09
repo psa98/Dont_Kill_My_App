@@ -58,7 +58,7 @@ public final class LifeKeeper {
         return INSTANCE;
     }
 
-    public final void launchRepeatingWorkRequest(long period) {
+    public final synchronized void launchRepeatingWorkRequest(long period) {
         OneTimeWorkRequest singleWorkRequest =
                 new OneTimeWorkRequest.Builder(RelaunchWorkRequest.class)
                         .setInitialDelay(period, TimeUnit.SECONDS)
@@ -67,7 +67,7 @@ public final class LifeKeeper {
         workManager.enqueue(singleWorkRequest);
     }
 
-    public final void start(Context context) {
+    public final synchronized void start(Context context) {
         running = true;
         registerReceivers(context);
         workManager = WorkManager.getInstance(context);
@@ -82,14 +82,14 @@ public final class LifeKeeper {
      *
      */
 
-    public final  void pause(Context context) {
+    public final synchronized void pause(Context context) {
         running = false;
         unregisterReceivers(context);
         workManager.cancelAllWork();
     }
 
 
-    final void emitEvents() {
+    final synchronized void emitEvents() {
 
         if (!running) return;
 
@@ -97,18 +97,15 @@ public final class LifeKeeper {
         onEachEvent(currentTimestamp);
         for (MutableLiveData<Long> liveData :
                 subscriptions) {
-            if (liveData != null) {
-                setLiveDataFromMain(currentTimestamp, liveData);
-            }
+            if (liveData != null) setLiveDataFromMain(liveData,currentTimestamp);
         }
         PeriodicSubscription liveDataPeriodic;
         for (int i = 0; i < periodicSubscriptions.size(); i++) {
             liveDataPeriodic = periodicSubscriptions.get(i);
             if (liveDataPeriodic == null) continue;
-            if (liveDataPeriodic.liveData != null &&
-                    ((currentTimestamp - liveDataPeriodic.previousSubscriptionEventTimestamp)
-                            >= liveDataPeriodic.periodicity * 1000)) {
-                setLiveDataFromMain(currentTimestamp, liveDataPeriodic.liveData);
+            final long secondsBetween = (currentTimestamp - liveDataPeriodic.previousSubscriptionEventTimestamp)/1000;
+            if (secondsBetween>= liveDataPeriodic.periodicity) {
+                setLiveDataFromMain(liveDataPeriodic.liveData,currentTimestamp);
                 Logger.appendEvent("\n" + Logger.formattedTimeStamp()
                         + " Periodic event #" + (i + 1) + " " + liveDataPeriodic.periodicity + " s");
                 liveDataPeriodic.previousSubscriptionEventTimestamp = currentTimestamp;
@@ -116,19 +113,6 @@ public final class LifeKeeper {
             }
         }
         launchTimerTask();
-
-    }
-
-    private void setLiveDataFromMain(long currentTimestamp, MutableLiveData<Long> liveData) {
-
-        final Looper mainLooper = Looper.getMainLooper();
-        if (mainLooper.isCurrentThread())
-            liveData.setValue(currentTimestamp);
-        else{
-            // переброска исполнения для воркеров в main thread, иначе LiveData.set не работает
-            Handler handler = new Handler(mainLooper);
-            handler.post(() -> liveData.setValue(currentTimestamp));
-        }
 
     }
 
@@ -157,13 +141,13 @@ public final class LifeKeeper {
 
     }
 
-    // todo - сделаны приватными до завершения тестирования
-    private synchronized void unsubscribeEvents(LiveData<Long> liveData) {
+
+    public synchronized void unsubscribeEvents(LiveData<Long> liveData) {
         //noinspection RedundantCast
-        subscriptions.remove((MutableLiveData<Long>) liveData); // протестить как оно вообще
+        subscriptions.remove((MutableLiveData<Long>) liveData);
     }
 
-    private  synchronized void unsubscribePeriodicEvents(LiveData<Long> liveData) {
+    public  synchronized void unsubscribePeriodicEvents(LiveData<Long> liveData) {
         PeriodicSubscription periodicSubscription = new PeriodicSubscription((MutableLiveData<Long>) liveData);
         periodicSubscriptions.remove(periodicSubscription);
     }
@@ -215,25 +199,36 @@ public final class LifeKeeper {
 
         @Override
         public boolean equals(@Nullable Object obj) {
-            if (!(obj instanceof MutableLiveData)) return false;
-            return this.liveData == obj;
+            if (!(obj instanceof PeriodicSubscription)) return false;
+
+            return this.liveData == ((PeriodicSubscription)(obj)).liveData;
         }
     }
 
-    public void setEventListener(LifeKeeperEventsListener eventListener) {
+    public synchronized  void setEventListener(LifeKeeperEventsListener eventListener) {
         this.eventListener = eventListener;
     }
 
     public interface LifeKeeperEventsListener {
-        void onEvent(long timestamp);
+        void  onEvent(long timestamp);
     }
 
 
-    private   void onEachEvent(long timestamp){
-    if (eventListener!=null) eventListener.onEvent(timestamp);
+    private synchronized    void onEachEvent(long timestamp){
+     if (eventListener!=null)eventListener.onEvent(timestamp);
     }
 
 
+    private synchronized void setLiveDataFromMain( MutableLiveData<Long> liveData, long currentTimestamp) {
 
+        final Looper mainLooper = Looper.getMainLooper();
+        if (mainLooper.isCurrentThread())
+            liveData.setValue(currentTimestamp);
+        else{
+            // переброска исполнения для воркеров в main thread, иначе LiveData.set не работает
+            Handler handler = new Handler(mainLooper);
+            handler.post(() -> liveData.setValue(currentTimestamp));
+        }
 
+    }
 }

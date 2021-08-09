@@ -2,6 +2,8 @@ package c.ponom.survivalistapplication;
 
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
+
 import java.time.Instant;
 import java.util.Date;
 
@@ -11,7 +13,7 @@ import static c.ponom.survivalistapplication.Application.TAG;
 import static c.ponom.survivalistapplication.Application.debugMode;
 import static c.ponom.survivalistapplication.model.SharedPrefsRepository.getParameterString;
 
-public class MyBackgroundWork   {
+public class MyBackgroundWork {
 
 
     /**
@@ -30,12 +32,12 @@ public class MyBackgroundWork   {
                 .observeForever(time ->{
                     if (debugMode) Log.e(TAG, "detected event in service ");});
 
-        lifeKeeper.subscribeOnPeriodicEvents(60)
-                .observeForever(time ->{
+        LiveData<Long> liveData60s = lifeKeeper.subscribeOnPeriodicEvents(60);
+        liveData60s.  observeForever(time ->{
                     if (debugMode) Log.e(TAG, "detected periodic event - 60 s");});
 
-        lifeKeeper.subscribeOnPeriodicEvents(90)
-                .observeForever(time ->{
+        LiveData<Long> liveData90s = lifeKeeper.subscribeOnPeriodicEvents(90);
+        liveData90s.observeForever(time ->{
                     if (debugMode) Log.e(TAG, "detected periodic event - 90 s");});
 
         lifeKeeper.setEventListener(timestamp -> {
@@ -51,6 +53,7 @@ public class MyBackgroundWork   {
         Logger.liveSkippedEventsList.postValue(oldSkippedEventsList);
 
     }
+
 
 
 }
