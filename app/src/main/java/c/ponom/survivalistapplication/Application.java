@@ -28,8 +28,8 @@ public class Application extends android.app.Application {
         thisApplication = this;
         sharedPreferences = getSharedPreferences("globalSettings", Context.MODE_PRIVATE);
         LifeKeeper.getInstance().start(this);
-        MyBackgroundWork myBackGroundWork = new MyBackgroundWork();
-        myBackGroundWork.backgroundProcessorSetup();
+        BackgroundWorker backGroundWorker = new BackgroundWorker();
+        backGroundWorker.backgroundProcessorSetup();
     }
 }
 

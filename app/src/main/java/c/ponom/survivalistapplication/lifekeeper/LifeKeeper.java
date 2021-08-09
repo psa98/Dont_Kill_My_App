@@ -33,9 +33,6 @@ public final class LifeKeeper {
     private static final long TIMER_TASK_PERIOD = 15;
     private  WorkManager workManager;
     private static volatile LifeKeeper INSTANCE;
-    private final KeepAliveReceiver keepAliveReceiver;
-    //его тоже сделать синглтоном и получать через гетинстанс?
-
     private final ArrayList<MutableLiveData<Long>> subscriptions = new ArrayList<>();
     private final ArrayList<PeriodicSubscription> periodicSubscriptions = new ArrayList<>();
     private Timer timer = new Timer();
@@ -45,7 +42,6 @@ public final class LifeKeeper {
 
 
      private LifeKeeper() {
-        keepAliveReceiver = KeepAliveReceiver.getInstance();
 
     }
 
@@ -92,13 +88,15 @@ public final class LifeKeeper {
     final synchronized void emitEvents() {
 
         if (!running) return;
-
         long currentTimestamp = new Date().getTime();
         onEachEvent(currentTimestamp);
-        for (MutableLiveData<Long> liveData :
-                subscriptions) {
-            if (liveData != null) setLiveDataFromMain(liveData,currentTimestamp);
-        }
+        checkAllEventsSubscriptions(currentTimestamp);
+        checkPeriodicSubscriptions(currentTimestamp);
+        launchTimerTask();
+
+    }
+
+    private void checkPeriodicSubscriptions(long currentTimestamp) {
         PeriodicSubscription liveDataPeriodic;
         for (int i = 0; i < periodicSubscriptions.size(); i++) {
             liveDataPeriodic = periodicSubscriptions.get(i);
@@ -112,8 +110,13 @@ public final class LifeKeeper {
                 periodicSubscriptions.set(i, liveDataPeriodic);
             }
         }
-        launchTimerTask();
+    }
 
+    private void checkAllEventsSubscriptions(long currentTimestamp) {
+        for (MutableLiveData<Long> liveData :
+                subscriptions) {
+            if (liveData != null) setLiveDataFromMain(liveData,currentTimestamp);
+        }
     }
 
     public final synchronized LiveData<Long> subscribeOnAllEvents() {
@@ -155,6 +158,7 @@ public final class LifeKeeper {
 
 
     private void registerReceivers(Context context) {
+        KeepAliveReceiver keepAliveReceiver =KeepAliveReceiver.getInstance();
         context.registerReceiver(keepAliveReceiver, new IntentFilter(ACTION_TIME_TICK));
         context.registerReceiver(keepAliveReceiver, new IntentFilter(ACTION_BATTERY_CHANGED));
         context.registerReceiver(keepAliveReceiver, new IntentFilter(ACTION_POWER_SAVE_MODE_CHANGED));
@@ -162,7 +166,7 @@ public final class LifeKeeper {
     }
 
      private void unregisterReceivers(Context context) {
-        context.unregisterReceiver(keepAliveReceiver);
+        context.unregisterReceiver(KeepAliveReceiver.getInstance());
     }
 
     final void launchTimerTask() {

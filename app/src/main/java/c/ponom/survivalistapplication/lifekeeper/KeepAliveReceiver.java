@@ -34,7 +34,7 @@ public final class KeepAliveReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        // todo тут ничего этого не будет в продебудет одно событие
+        // todo тут ничего этого не будет в проде будет одно событие
         switch (intent.getAction()) {
             case ACTION_BOOT_COMPLETED:
                 registerBroadcastEvent(" Rebooted, auto launched ");

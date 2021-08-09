@@ -13,7 +13,7 @@ import static c.ponom.survivalistapplication.Application.TAG;
 import static c.ponom.survivalistapplication.Application.debugMode;
 import static c.ponom.survivalistapplication.model.SharedPrefsRepository.getParameterString;
 
-public class MyBackgroundWork {
+public class BackgroundWorker {
 
 
     /**
@@ -23,7 +23,7 @@ public class MyBackgroundWork {
      * MyBackgroundWork myBackGroundWork = new MyBackgroundWork();
      * myBackGroundWork.backgroundProcessorSetup();
      *
-     * Фактически данный класс  используется только для разгрузки Application от излишнего кода
+     * Фактически данный класс  используется только для разгрузки Application от излишнего стартового  кода
      */
 
     public void backgroundProcessorSetup() {
