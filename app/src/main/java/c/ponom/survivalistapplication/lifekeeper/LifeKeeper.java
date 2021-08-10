@@ -101,9 +101,10 @@ public final class LifeKeeper {
         for (int i = 0; i < periodicSubscriptions.size(); i++) {
             liveDataPeriodic = periodicSubscriptions.get(i);
             if (liveDataPeriodic == null) continue;
-            final long secondsBetween = (currentTimestamp - liveDataPeriodic.previousSubscriptionEventTimestamp)/1000;
+            final long secondsBetween = (currentTimestamp -
+                    liveDataPeriodic.previousSubscriptionEventTimestamp)/1000;
             if (secondsBetween>= liveDataPeriodic.periodicity) {
-                setLiveDataFromMain(liveDataPeriodic.liveData,currentTimestamp);
+                setLiveDataFromMainThread(liveDataPeriodic.liveData,currentTimestamp);
                 Logger.appendEvent("\n" + Logger.formattedTimeStamp()
                         + " Periodic event #" + (i + 1) + " " + liveDataPeriodic.periodicity + " s");
                 liveDataPeriodic.previousSubscriptionEventTimestamp = currentTimestamp;
@@ -115,7 +116,7 @@ public final class LifeKeeper {
     private void checkAllEventsSubscriptions(long currentTimestamp) {
         for (MutableLiveData<Long> liveData :
                 subscriptions) {
-            if (liveData != null) setLiveDataFromMain(liveData,currentTimestamp);
+            if (liveData != null) setLiveDataFromMainThread(liveData,currentTimestamp);
         }
     }
 
@@ -189,8 +190,8 @@ public final class LifeKeeper {
 
     private static class PeriodicSubscription {
         private final MutableLiveData<Long> liveData;
-        private long previousSubscriptionEventTimestamp;
         private long periodicity;
+        private long previousSubscriptionEventTimestamp;
 
         public PeriodicSubscription(MutableLiveData<Long> liveData) {
             this.liveData = liveData;
@@ -204,7 +205,6 @@ public final class LifeKeeper {
         @Override
         public boolean equals(@Nullable Object obj) {
             if (!(obj instanceof PeriodicSubscription)) return false;
-
             return this.liveData == ((PeriodicSubscription)(obj)).liveData;
         }
     }
@@ -223,7 +223,7 @@ public final class LifeKeeper {
     }
 
 
-    private synchronized void setLiveDataFromMain( MutableLiveData<Long> liveData, long currentTimestamp) {
+    private synchronized void setLiveDataFromMainThread(MutableLiveData<Long> liveData, long currentTimestamp) {
 
         final Looper mainLooper = Looper.getMainLooper();
         if (mainLooper.isCurrentThread())

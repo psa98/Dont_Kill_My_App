@@ -19,7 +19,8 @@ public class BackgroundWorker {
     /**
      *  тут можно к примеру, инициировать для последедующего обзора
      * observe forever лайфдаты через LifeKeeper.subscribe..., выполнить другие однократные действия
-     * метод так же вызывается при ребуте  если в onCreate Application класса есть
+     *  и реализоваьть все другие обработчики
+     * метод так же вызывается при (автозапуске) если в onCreate Application класса есть
      * MyBackgroundWork myBackGroundWork = new MyBackgroundWork();
      * myBackGroundWork.backgroundProcessorSetup();
      *
