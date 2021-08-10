@@ -19,8 +19,13 @@ import static c.ponom.survivalistapplication.Logger.registerInSkippedLogEvent;
 public final class KeepAliveReceiver extends BroadcastReceiver {
 
     private volatile static KeepAliveReceiver INSTANCE;
+    private DozeModeListener eventListener;
 
-    private KeepAliveReceiver() {
+    public KeepAliveReceiver() {
+        //это требуется для возможности старта ресивера системой, так что сделать его
+        // private как в классическом синглтоне нельзя. В принципе в итоге экземпляр будет
+        // создан уже при ребуте
+        INSTANCE=this;
     }
 
     public synchronized static KeepAliveReceiver getInstance() {
@@ -46,19 +51,36 @@ public final class KeepAliveReceiver extends BroadcastReceiver {
                 registerBroadcastEvent(" Battery event");
                 break;
             case ACTION_POWER_SAVE_MODE_CHANGED:
+                ///
+                break;
             case ACTION_DEVICE_IDLE_MODE_CHANGED:
                 registerBroadcastEvent("\n"+ formattedTimeStamp()+ " Power mode "
-                        + powerState());
-                registerInSkippedLogEvent("\n Power mode " + powerState());
+                        + getPowerStateString());
+                registerInSkippedLogEvent("\n Power mode " + getPowerStateString());
+                if (eventListener!=null)  eventListener.onDozeModeChange(getDoseModeState());
+
         }
 
         LifeKeeper.getInstance().emitEvents();
 
     }
 
-    private String powerState() {
+    private String getPowerStateString() {
         PowerManager pm = (PowerManager) getAppContext().getSystemService(Context.POWER_SERVICE);
-        return pm.isDeviceIdleMode() ? " doze  on \n" : " doze off \n";
+        return pm.isDeviceIdleMode() ? "doze  mode on" : "doze mode off";
+    }
+
+    public boolean getDoseModeState() {
+        PowerManager pm = (PowerManager) getAppContext().getSystemService(Context.POWER_SERVICE);
+        return pm.isDeviceIdleMode();
+    }
+
+    public synchronized  void setDozeModeListener(DozeModeListener eventListener) {
+        this.eventListener = eventListener;
+    }
+
+    public interface DozeModeListener {
+        void  onDozeModeChange(boolean mode);
     }
 
 }

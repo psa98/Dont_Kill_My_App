@@ -1,12 +1,12 @@
 package c.ponom.survivalistapplication.lifekeeper;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import java.util.Locale;
 import java.util.Set;
 
 import c.ponom.survivalistapplication.Logger;
@@ -21,7 +21,7 @@ public final class RelaunchWorkRequest extends Worker {
         super(appContext, workerParams);
     }
 
-    @SuppressLint("DefaultLocale")
+
     @NonNull
     @Override
     public Result doWork() {
@@ -38,7 +38,7 @@ public final class RelaunchWorkRequest extends Worker {
         if (tagString.isEmpty()) return Result.success();
         // что-то пошло не так, в теге нет правильного времени, перезапуска не будет
 
-        Logger.registerWorkerEvent(format("Worker event %d s", period));
+        Logger.registerWorkerEvent(format(Locale.getDefault(),"Worker event %d s", period));
         lifeKeeper.launchRepeatingWorkRequest(period);
         lifeKeeper.launchTimerTask();
         lifeKeeper.emitEvents();

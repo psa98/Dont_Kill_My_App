@@ -88,7 +88,7 @@ public class Logger {
 
 
     private static String formatDate(Date date) {
-        return new SimpleDateFormat("dd/MM  HH:mm:ss",
+        return new SimpleDateFormat("dd/MM HH:mm:ss",
                 Locale.getDefault()).format(date);
     }
 
@@ -98,6 +98,8 @@ public class Logger {
         String skippedLogString = getParameterString("skipped");
         liveSkippedEventsList.postValue(skippedLogString);
     }
+
+
 }
 
 
