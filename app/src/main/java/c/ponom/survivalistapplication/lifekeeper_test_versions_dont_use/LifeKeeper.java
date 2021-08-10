@@ -37,6 +37,7 @@ public final class LifeKeeper {
     private final ArrayList<PeriodicSubscription> periodicSubscriptions = new ArrayList<>();
     private Timer timer = new Timer();
     private boolean running = false;
+    KeepAliveReceiver keepAliveReceiver = KeepAliveReceiver.getInstance();
     LifeKeeperEventsListener eventListener;
 
 
@@ -160,7 +161,6 @@ public final class LifeKeeper {
 
 
     private void registerReceivers(Context context) {
-        KeepAliveReceiver keepAliveReceiver =KeepAliveReceiver.getInstance();
         context.registerReceiver(keepAliveReceiver, new IntentFilter(ACTION_TIME_TICK));
         context.registerReceiver(keepAliveReceiver, new IntentFilter(ACTION_BATTERY_CHANGED));
         context.registerReceiver(keepAliveReceiver, new IntentFilter(ACTION_POWER_SAVE_MODE_CHANGED));
@@ -168,7 +168,7 @@ public final class LifeKeeper {
     }
 
      private void unregisterReceivers(Context context) {
-        context.unregisterReceiver(KeepAliveReceiver.getInstance());
+        context.unregisterReceiver(keepAliveReceiver);
     }
 
     final void launchTimerTask() {

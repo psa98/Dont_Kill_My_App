@@ -30,7 +30,7 @@ public final class RelaunchWorkRequest extends Worker {
             break;
         }
         int period = Integer.parseInt(tagString);
-        if (tagString.isEmpty()) return Result.success();
+        if (tagString.isEmpty()) return Result.failure();
         // что-то пошло не так, в теге нет правильного времени, перезапуска не будет
         lifeKeeper.launchRepeatingWorkRequest(period);
         lifeKeeper.launchTimerTask();

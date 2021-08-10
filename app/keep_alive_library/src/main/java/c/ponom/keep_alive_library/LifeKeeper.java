@@ -34,9 +34,10 @@ public final class LifeKeeper {
     private final ArrayList<PeriodicSubscription> periodicSubscriptions = new ArrayList<>();
     private Timer timer = new Timer();
     private boolean running = false;
-    LifeKeeperEventsListener eventListener;
+    private final KeepAliveReceiver keepAliveReceiver=KeepAliveReceiver.getInstance();
+    private LifeKeeperEventsListener eventListener;
 
-     private LifeKeeper() {
+    private LifeKeeper() {
 
     }
 
@@ -48,9 +49,6 @@ public final class LifeKeeper {
         return INSTANCE;
     }
 
-
-
-
     /**
      * Вызовите этот метод из application класса для обеспечения выживания  приложения в фоне
      * При добавлении в манифест строки < android:name="android.permission.RECEIVE_BOOT_COMPLETE" />
@@ -61,7 +59,7 @@ public final class LifeKeeper {
      * интент-фильтров
      * Установите слушатели через setEventListener(), или подпишитесь на обновление лайфдат через
      * subscribeOnPeriodicEvents (...) subscribeOnAllEvents(), или на получение конкретных интентов
-     * в  классе KeepAliveReceiver через установку слушателей типа setBatteryEventListener(...)
+     * в  классе EventReceiver через установку слушателей типа setBatteryEventListener(...)
      */
     public final synchronized void start(Context context) {
         running = true;
@@ -116,7 +114,6 @@ public final class LifeKeeper {
         PeriodicSubscription periodicSubscription = new PeriodicSubscription(seconds);
         periodicSubscriptions.add(periodicSubscription);
         return periodicSubscription.liveData;
-
     }
 
 
@@ -132,7 +129,7 @@ public final class LifeKeeper {
 
 
     /**
-     * Bызов слушателя осуществляется  при первой возможности, с максимально возможной частотой,
+     * Вызов слушателя осуществляется  при первой возможности, с максимально возможной частотой,
      * позволяемой системой.
      *  Гарантий вызова события с заданной частотй дать невозможно, система может убить или
      * остановить приложение в любой момент. Максимальная частота вызова при телефоне на зарядке
@@ -179,14 +176,13 @@ public final class LifeKeeper {
         launchTimerTask();
     }
     private void registerReceivers(Context context) {
-        KeepAliveReceiver keepAliveReceiver =KeepAliveReceiver.getInstance();
         context.registerReceiver(keepAliveReceiver, new IntentFilter(ACTION_TIME_TICK));
         context.registerReceiver(keepAliveReceiver, new IntentFilter(ACTION_BATTERY_CHANGED));
         context.registerReceiver(keepAliveReceiver, new IntentFilter(ACTION_DEVICE_IDLE_MODE_CHANGED));
     }
 
     private void unregisterReceivers(Context context) {
-        context.unregisterReceiver(KeepAliveReceiver.getInstance());
+        context.unregisterReceiver(keepAliveReceiver);
     }
     private void checkPeriodicSubscriptions(long currentTimestamp) {
         PeriodicSubscription liveDataPeriodic;
@@ -202,8 +198,6 @@ public final class LifeKeeper {
             }
         }
     }
-
-
 
     private static class PeriodicSubscription {
         private final MutableLiveData<Long> liveData;
@@ -224,7 +218,6 @@ public final class LifeKeeper {
             return this.liveData == ((PeriodicSubscription)(obj)).liveData;
         }
     }
-
 
 
      /*  метод вызывается  с максимально возможной частотой, позволяемой системой, типичный параметр

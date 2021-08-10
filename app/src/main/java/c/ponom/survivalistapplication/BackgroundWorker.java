@@ -7,8 +7,8 @@ import androidx.lifecycle.LiveData;
 import java.time.Instant;
 import java.util.Date;
 
-import c.ponom.survivalistapplication.lifekeeper_test_versions_dont_use.KeepAliveReceiver;
 import c.ponom.survivalistapplication.lifekeeper_test_versions_dont_use.LifeKeeper;
+import c.ponom.survivalistapplication.lifekeeper_test_versions_dont_use.ReceiverEvents;
 
 import static c.ponom.survivalistapplication.Application.TAG;
 import static c.ponom.survivalistapplication.Application.debugMode;
@@ -20,7 +20,7 @@ public class BackgroundWorker {
 
 
     /**
-     *  тут можно к примеру, инициировать для последедующего обзора
+     *  тут можно к примеру, инициировать для последующего обзора через
      * observe forever лайфдаты через LifeKeeper.subscribe..., выполнить другие однократные действия
      *  и реализовать все другие обработчики
      * метод так же вызывается при (автозапуске) если в onCreate Application класса есть
@@ -29,9 +29,8 @@ public class BackgroundWorker {
      *
      * Фактически данный класс  используется только для разгрузки Application от излишнего стартового  кода
      */
-
     public void backgroundProcessorSetup() {
-        KeepAliveReceiver keepAliveReceiver=KeepAliveReceiver.getInstance();
+        ReceiverEvents receiverEvents = ReceiverEvents.getInstance();
         LifeKeeper lifeKeeper = LifeKeeper.getInstance();
         lifeKeeper.subscribeOnAllEvents()
                 .observeForever(time ->{
@@ -47,29 +46,24 @@ public class BackgroundWorker {
 
         lifeKeeper.setEventListener(timestamp -> {
             if (debugMode) Log.e(TAG, "onEvent"+Date.from ( Instant.ofEpochSecond(timestamp/1000)));
-
         });
-
-        keepAliveReceiver.setBatteryEventListener(percentCharged -> Logger.appendEvent("broadcast event logged - battery event," +
-                " charge = "+percentCharged+ " %"));
-
-        keepAliveReceiver.setRebootListener(() -> Logger.appendEvent("broadcast event logged - reboot event"));
-
-        keepAliveReceiver.setTickEventListener(() -> Logger.appendEvent("broadcast event logged - tick event"));
-
-
-        KeepAliveReceiver.getInstance().setDozeModeListener(mode -> saveParameter(
-                "TEST - get interface event on doze mode status, mode = "
+        receiverEvents.setBatteryEventListener(percentCharged -> {
+                Logger.appendEvent("\n broadcast event logged in receiver - battery event," +
+                " charge = "+percentCharged+ " %");
+            Log.i(TAG, "broadcast event logged  in receiver - battery event," +
+                    " charge = "+percentCharged+ " %");
+        });
+        receiverEvents.setTickEventListener(()-> {
+            Logger.appendEvent("\n tick event  logged in receiver");
+            Log.i(TAG, "tick event  logged in receiver");
+        });
+        receiverEvents.setDozeModeListener(mode -> saveParameter(
+                "\n TEST - get interface event on doze mode status, mode = "
                         +mode, "skipped", STRING));
-
         String oldSkippedEventsList = getParameterString("skipped");
         String oldEventsList = getParameterString("events");
         Logger.appendEvent("\n" + Logger.formattedTimeStamp() + " Service relaunched ");
         Logger.liveEventsList.postValue(oldEventsList);
         Logger.liveSkippedEventsList.postValue(oldSkippedEventsList);
-
     }
-
-
-
 }

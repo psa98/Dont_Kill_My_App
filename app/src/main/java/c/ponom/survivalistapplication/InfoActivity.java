@@ -24,30 +24,24 @@ public class InfoActivity extends AppCompatActivity {
     private EditText list, skippedList;
     private boolean refreshingLogs = true;
     private TextView lastEvent;
-    LiveData<Long> eventBus;
-    LifeKeeper lifeKeeper=LifeKeeper.getInstance();
+    private LiveData<Long> eventBus;
+    private final LifeKeeper lifeKeeper=LifeKeeper.getInstance();
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         list = findViewById(R.id.logList);
         skippedList = findViewById(R.id.skippedList);
         lastEvent = findViewById(R.id.lastEvent);
-
-
         LiveData<String> eventList = Logger.liveEventsList;
         LiveData<String> skippedEventList = Logger.liveSkippedEventsList;
         eventList.observe(this, newList -> {
             if (refreshingLogs) showAndScrollToEnd(newList);
         });
-
         skippedEventList.observe(this, newList -> showSkippedAndScrollToEnd(newList));
-
-
     }
 
     @Override
