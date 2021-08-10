@@ -31,6 +31,7 @@ public class BackgroundWorker {
      */
 
     public void backgroundProcessorSetup() {
+        KeepAliveReceiver keepAliveReceiver=KeepAliveReceiver.getInstance();
         LifeKeeper lifeKeeper = LifeKeeper.getInstance();
         lifeKeeper.subscribeOnAllEvents()
                 .observeForever(time ->{
@@ -48,6 +49,13 @@ public class BackgroundWorker {
             if (debugMode) Log.e(TAG, "onEvent"+Date.from ( Instant.ofEpochSecond(timestamp/1000)));
 
         });
+
+        keepAliveReceiver.setBatteryEventListener(percentCharged -> Logger.appendEvent("broadcast event logged - battery event," +
+                " charge = "+percentCharged+ " %"));
+
+        keepAliveReceiver.setRebootListener(() -> Logger.appendEvent("broadcast event logged - reboot event"));
+
+        keepAliveReceiver.setTickEventListener(() -> Logger.appendEvent("broadcast event logged - tick event"));
 
 
         KeepAliveReceiver.getInstance().setDozeModeListener(mode -> saveParameter(

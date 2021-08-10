@@ -1,2 +1,3 @@
+include ':app:keep_alive_library'
 include ':app'
 rootProject.name = "Survivalist Application"

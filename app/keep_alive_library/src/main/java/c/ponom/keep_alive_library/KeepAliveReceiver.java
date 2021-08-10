@@ -1,4 +1,4 @@
-package c.ponom.survivalistapplication.lifekeeper;
+package c.ponom.keep_alive_library;
 
 
 import android.content.BroadcastReceiver;
@@ -12,11 +12,8 @@ import static android.content.Intent.ACTION_BOOT_COMPLETED;
 import static android.content.Intent.ACTION_TIME_TICK;
 import static android.os.PowerManager.ACTION_DEVICE_IDLE_MODE_CHANGED;
 import static android.os.PowerManager.ACTION_POWER_SAVE_MODE_CHANGED;
-import static c.ponom.survivalistapplication.Application.getAppContext;
-import static c.ponom.survivalistapplication.Logger.formattedTimeStamp;
-import static c.ponom.survivalistapplication.Logger.registerBroadcastEvent;
-import static c.ponom.survivalistapplication.Logger.registerInSkippedLogEvent;
 
+@SuppressWarnings("unused")
 public final class KeepAliveReceiver extends BroadcastReceiver {
 
     private volatile static KeepAliveReceiver INSTANCE;
@@ -44,28 +41,23 @@ public final class KeepAliveReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        // todo тут ничего этого не будет в проде будет одно событие
+        //мы контекст получаем при первом же событии, так что NPE ожидать не следует
         switch (intent.getAction()) {
             case ACTION_BOOT_COMPLETED:
-                if (rebootEventListener!=null) rebootEventListener.onReboot();
-                registerBroadcastEvent(" Rebooted, auto launched ");
+               if (rebootEventListener!=null) rebootEventListener.onReboot();
                 break;
             case ACTION_TIME_TICK:
                 if (tickEventListener!=null) tickEventListener.onTickEvent();
-                registerBroadcastEvent(" On Tick Event ");
                 break;
             case ACTION_BATTERY_CHANGED:
-                if (batteryEventListener!=null) batteryEventListener.onBatteryEvent(getBatteryState());
-                registerBroadcastEvent(" Battery event");
+                if (batteryEventListener!=null) batteryEventListener.onBatteryEvent(getBatteryState(context));
                 break;
             case ACTION_POWER_SAVE_MODE_CHANGED:
-                ///
+
                 break;
             case ACTION_DEVICE_IDLE_MODE_CHANGED:
-                registerBroadcastEvent("\n"+ formattedTimeStamp()+ " Power mode "
-                        + getPowerStateString());
-                registerInSkippedLogEvent("\n Power mode " + getPowerStateString());
-                if (dozeEventListener!=null)  dozeEventListener.onDozeModeChange(getDoseModeState());
+
+                if (dozeEventListener!=null)  dozeEventListener.onDozeModeChange(getDoseModeState(context));
 
         }
 
@@ -73,24 +65,21 @@ public final class KeepAliveReceiver extends BroadcastReceiver {
 
     }
 
-    private String getPowerStateString() {
-        PowerManager pm = (PowerManager) getAppContext().getSystemService(Context.POWER_SERVICE);
-        return pm.isDeviceIdleMode() ? "doze  mode on" : "doze mode off";
-    }
 
-    public boolean getDoseModeState() {
-        PowerManager pm = (PowerManager) getAppContext().getSystemService(Context.POWER_SERVICE);
+    private boolean getDoseModeState(Context context) {
+        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         return pm.isDeviceIdleMode();
     }
 
 
-    public int getBatteryState() {
-        BatteryManager bm = (BatteryManager) getAppContext().getSystemService(Context.BATTERY_SERVICE);
+    private int getBatteryState(Context context) {
+        BatteryManager bm = (BatteryManager)  context.getSystemService(Context.BATTERY_SERVICE);
         return bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
     }
 
     public synchronized  void setDozeModeListener(DozeModeListener eventListener) {
         dozeEventListener = eventListener;
+
     }
 
     public synchronized  void setRebootListener(RebootEventListener eventListener) {

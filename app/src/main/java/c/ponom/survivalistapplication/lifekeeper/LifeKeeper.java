@@ -60,6 +60,7 @@ public final class LifeKeeper {
                         .setInitialDelay(period, TimeUnit.SECONDS)
                         .addTag("seconds=" + period)
                         .build();
+
         workManager.enqueue(singleWorkRequest);
     }
 
