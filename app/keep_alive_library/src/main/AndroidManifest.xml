@@ -5,4 +5,24 @@
     <uses-permission
         android:name="android.permission.RECEIVE_BOOT_COMPLETE" />
 
+    <application>
+
+
+        <receiver
+            android:name=".KeepAliveReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.TIME_TICK" />
+                <action android:name="android.intent.action.BATTERY_CHANGED" />
+                <action android:name="android.os.action.DEVICE_IDLE_MODE_CHANGED" />
+                <action android:name="android.os.action.ACTION_POWER_SAVE_MODE_CHANGED" />
+
+            </intent-filter>
+        </receiver>
+
+
+    </application>
+
 </manifest>

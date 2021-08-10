@@ -52,12 +52,17 @@ public final class LifeKeeper {
 
 
 
-    /*
-     *просто вызовите этот метод из application класса для обеспечения выживания  приложения в фоне
-     * При добавлении в манифест строки <android:name="android.permission.RECEIVE_BOOT_COMPLETE" />
-     * оно так же будет автоматически перезапускаться при перезагрузке.
-     * Установите слушатели через setEventListener(), или подпишитесь на обновление лайфдаты через
-     *
+    /**
+     * Вызовите этот метод из application класса для обеспечения выживания  приложения в фоне
+     * При добавлении в манифест строки < android:name="android.permission.RECEIVE_BOOT_COMPLETE" />
+     * оно так же будет автоматически перезапускаться при перезагрузке. При этом (и при любом перезапуске)
+     * гарантируется вызов метода onCreate(..) Application класса, где можно возобновить необходимые
+     * подписки на события.
+     * для работы обязательно добавление раздела соотв. раздела < receiver> в манифест с указанием
+     * интент-фильтров
+     * Установите слушатели через setEventListener(), или подпишитесь на обновление лайфдат через
+     * subscribeOnPeriodicEvents (...) subscribeOnAllEvents(), или на получение конкретных интентов
+     * в  классе KeepAliveReceiver через установку слушателей типа setBatteryEventListener(...)
      */
     public final synchronized void start(Context context) {
         running = true;
@@ -86,9 +91,9 @@ public final class LifeKeeper {
      * Гарантий вызова события с заданной частотой дать невозможно, система может убить или
      * остановить приложение в любой момент. Типичные задержки вызова  (заданное время+задержка)
      *  в doze mode по итогам тестов могут достигать 3 минут, при длительном нахождение в режиме-
-     * 20 минут. При нахождении приложеня во фронте - не более 5-15 секунд. Для китайских телефонов
-     * можно ожидать очень проблемной работы в фоне без отключения режима экономии для приложения
-     *
+     * 20 минут. При нахождении приложения во фронте/на зарядке - не более 5-15 секунд.
+     * Для китайских телефонов  можно ожидать очень проблемной работы в фоне без отключения
+     * режима экономии для приложения
      * */
     public final synchronized LiveData<Long> subscribeOnAllEvents() {
         MutableLiveData<Long> liveData = new MutableLiveData<>();
@@ -237,7 +242,8 @@ public final class LifeKeeper {
     }
 
 
-    private synchronized void setLiveDataFromMainThread(MutableLiveData<Long> liveData, long currentTimestamp) {
+    private synchronized void setLiveDataFromMainThread(MutableLiveData<Long> liveData,
+                                                        long currentTimestamp) {
         final Looper mainLooper = Looper.getMainLooper();
         if (mainLooper.isCurrentThread())
             liveData.setValue(currentTimestamp);
