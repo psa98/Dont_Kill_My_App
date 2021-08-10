@@ -1,4 +1,4 @@
-package c.ponom.survivalistapplication.lifekeeper;
+package c.ponom.survivalistapplication.lifekeeper_test_versions_dont_use;
 
 import android.content.Context;
 import android.content.IntentFilter;

@@ -21,7 +21,7 @@
         </activity>
 
         <receiver
-            android:name=".lifekeeper.KeepAliveReceiver"
+            android:name=".lifekeeper_test_versions_dont_use.KeepAliveReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>

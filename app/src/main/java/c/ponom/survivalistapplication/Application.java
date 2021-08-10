@@ -3,7 +3,7 @@ package c.ponom.survivalistapplication;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import c.ponom.survivalistapplication.lifekeeper.LifeKeeper;
+import c.ponom.survivalistapplication.lifekeeper_test_versions_dont_use.LifeKeeper;
 
 
 public class Application extends android.app.Application {

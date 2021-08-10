@@ -7,8 +7,8 @@ import androidx.lifecycle.LiveData;
 import java.time.Instant;
 import java.util.Date;
 
-import c.ponom.survivalistapplication.lifekeeper.KeepAliveReceiver;
-import c.ponom.survivalistapplication.lifekeeper.LifeKeeper;
+import c.ponom.survivalistapplication.lifekeeper_test_versions_dont_use.KeepAliveReceiver;
+import c.ponom.survivalistapplication.lifekeeper_test_versions_dont_use.LifeKeeper;
 
 import static c.ponom.survivalistapplication.Application.TAG;
 import static c.ponom.survivalistapplication.Application.debugMode;

@@ -1,4 +1,4 @@
-package c.ponom.survivalistapplication.lifekeeper;
+package c.ponom.survivalistapplication.lifekeeper_test_versions_dont_use;
 
 
 import android.content.BroadcastReceiver;
@@ -24,6 +24,7 @@ public final class KeepAliveReceiver extends BroadcastReceiver {
     private RebootEventListener rebootEventListener;
     private BatteryEventListener batteryEventListener;
     private TickEventListener tickEventListener;
+    private final ReceiverMediator receiverMediator;
 
 
     public KeepAliveReceiver() {
@@ -31,6 +32,9 @@ public final class KeepAliveReceiver extends BroadcastReceiver {
         // private как в классическом синглтоне нельзя. В принципе в итоге экземпляр будет
         // создан уже при ребуте
         INSTANCE=this;
+        receiverMediator = new ReceiverMediator();
+        receiverMediator.initReceiver(this);
+
     }
 
     public synchronized static KeepAliveReceiver getInstance() {
@@ -105,6 +109,8 @@ public final class KeepAliveReceiver extends BroadcastReceiver {
         tickEventListener = eventListener;
     }
 
+
+
     public interface DozeModeListener {
         void  onDozeModeChange(boolean mode);
     }
@@ -121,6 +127,8 @@ public final class KeepAliveReceiver extends BroadcastReceiver {
     }
 
 
-
+    interface Connection {
+        void getConnection(KeepAliveReceiver receiver);
+    }
 
 }
