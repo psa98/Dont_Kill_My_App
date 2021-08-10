@@ -11,14 +11,12 @@ import static android.content.Intent.ACTION_BATTERY_CHANGED;
 import static android.content.Intent.ACTION_BOOT_COMPLETED;
 import static android.content.Intent.ACTION_TIME_TICK;
 import static android.os.PowerManager.ACTION_DEVICE_IDLE_MODE_CHANGED;
-import static android.os.PowerManager.ACTION_POWER_SAVE_MODE_CHANGED;
 
 @SuppressWarnings("unused")
 public final class KeepAliveReceiver extends BroadcastReceiver {
 
     private volatile static KeepAliveReceiver INSTANCE;
     private DozeModeListener dozeEventListener;
-    private RebootEventListener rebootEventListener;
     private BatteryEventListener batteryEventListener;
     private TickEventListener tickEventListener;
 
@@ -26,7 +24,7 @@ public final class KeepAliveReceiver extends BroadcastReceiver {
     public KeepAliveReceiver() {
         //это требуется для возможности старта ресивера системой, так что сделать его
         // private как в классическом синглтоне нельзя. В принципе в итоге экземпляр будет
-        // создан уже при ребуте
+        // создан уже при ребуте если имеется соответствующее разрешение
         INSTANCE=this;
     }
 
@@ -44,25 +42,21 @@ public final class KeepAliveReceiver extends BroadcastReceiver {
         //мы контекст получаем при первом же событии, так что NPE ожидать не следует
         switch (intent.getAction()) {
             case ACTION_BOOT_COMPLETED:
-               if (rebootEventListener!=null) rebootEventListener.onReboot();
+                //
                 break;
             case ACTION_TIME_TICK:
                 if (tickEventListener!=null) tickEventListener.onTickEvent();
                 break;
             case ACTION_BATTERY_CHANGED:
-                if (batteryEventListener!=null) batteryEventListener.onBatteryEvent(getBatteryState(context));
+                if (batteryEventListener!=null) batteryEventListener.
+                        onBatteryEvent(getBatteryState(context));
                 break;
-            case ACTION_POWER_SAVE_MODE_CHANGED:
-
-                break;
-            case ACTION_DEVICE_IDLE_MODE_CHANGED:
-
-                if (dozeEventListener!=null)  dozeEventListener.onDozeModeChange(getDoseModeState(context));
+            case   ACTION_DEVICE_IDLE_MODE_CHANGED:
+                if (dozeEventListener!=null)  dozeEventListener.
+                        onDozeModeChange(getDoseModeState(context));
 
         }
-
         LifeKeeper.getInstance().emitEvents();
-
     }
 
 
@@ -79,14 +73,9 @@ public final class KeepAliveReceiver extends BroadcastReceiver {
 
     public synchronized  void setDozeModeListener(DozeModeListener eventListener) {
         dozeEventListener = eventListener;
-
     }
 
-    public synchronized  void setRebootListener(RebootEventListener eventListener) {
-        rebootEventListener = eventListener;
-    }
-
-    public synchronized  void setBatteryEventListener(BatteryEventListener eventListener) {
+     public synchronized  void setBatteryEventListener(BatteryEventListener eventListener) {
         batteryEventListener = eventListener;
     }
 
@@ -102,14 +91,8 @@ public final class KeepAliveReceiver extends BroadcastReceiver {
         void  onBatteryEvent(int percentCharged);
     }
 
-    public interface RebootEventListener {
-        void  onReboot();
-    }
     public interface TickEventListener {
         void  onTickEvent();
     }
-
-
-
 
 }

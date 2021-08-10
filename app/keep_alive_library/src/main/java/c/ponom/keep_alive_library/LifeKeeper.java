@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 import static android.content.Intent.ACTION_BATTERY_CHANGED;
 import static android.content.Intent.ACTION_TIME_TICK;
 import static android.os.PowerManager.ACTION_DEVICE_IDLE_MODE_CHANGED;
-import static android.os.PowerManager.ACTION_POWER_SAVE_MODE_CHANGED;
 
 
 @SuppressWarnings({"unused", "RedundantSuppression"})
@@ -103,7 +102,7 @@ public final class LifeKeeper {
 
     /**
     * Данные в возвращаемой лайфдате (unix time время в мс) обновляются при первой возможности,
-    * с максимально возможной частотой, позволяемой системой но не чаще заданного периода, и
+    * с максимально возможной частотой, позволяемой системой но не чаще заданного периода
     * (минимум - 60 секунд).
     * Гарантий вызова события с заданной частотой дать невозможно, система может убить или
     * остановить приложение в любой момент. Типичные задержки вызова  (заданное время+задержка)
@@ -183,7 +182,6 @@ public final class LifeKeeper {
         KeepAliveReceiver keepAliveReceiver =KeepAliveReceiver.getInstance();
         context.registerReceiver(keepAliveReceiver, new IntentFilter(ACTION_TIME_TICK));
         context.registerReceiver(keepAliveReceiver, new IntentFilter(ACTION_BATTERY_CHANGED));
-        context.registerReceiver(keepAliveReceiver, new IntentFilter(ACTION_POWER_SAVE_MODE_CHANGED));
         context.registerReceiver(keepAliveReceiver, new IntentFilter(ACTION_DEVICE_IDLE_MODE_CHANGED));
     }
 
