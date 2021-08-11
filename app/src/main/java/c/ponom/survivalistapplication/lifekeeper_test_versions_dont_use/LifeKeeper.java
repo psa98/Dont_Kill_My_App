@@ -2,6 +2,7 @@ package c.ponom.survivalistapplication.lifekeeper_test_versions_dont_use;
 
 import android.content.Context;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -163,8 +164,10 @@ public final class LifeKeeper {
     private void registerReceivers(Context context) {
         context.registerReceiver(keepAliveReceiver, new IntentFilter(ACTION_TIME_TICK));
         context.registerReceiver(keepAliveReceiver, new IntentFilter(ACTION_BATTERY_CHANGED));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         context.registerReceiver(keepAliveReceiver, new IntentFilter(ACTION_POWER_SAVE_MODE_CHANGED));
         context.registerReceiver(keepAliveReceiver, new IntentFilter(ACTION_DEVICE_IDLE_MODE_CHANGED));
+        }
     }
 
      private void unregisterReceivers(Context context) {
@@ -178,6 +181,7 @@ public final class LifeKeeper {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
+
                 // переброска исполнения в main thread, иначе LiveData.set не работает
                 Handler handler = new Handler(Looper.getMainLooper());
                 handler.post(() -> {
@@ -187,6 +191,7 @@ public final class LifeKeeper {
                 });
             }
         }, TIMER_TASK_PERIOD * 1000);
+
     }
 
     private static class PeriodicSubscription {
@@ -227,7 +232,7 @@ public final class LifeKeeper {
     private synchronized void setLiveDataFromMainThread(MutableLiveData<Long> liveData, long currentTimestamp) {
 
         final Looper mainLooper = Looper.getMainLooper();
-        if (mainLooper.isCurrentThread())
+        if (Looper.myLooper() == mainLooper)
             liveData.setValue(currentTimestamp);
         else{
             // переброска исполнения для воркеров в main thread, иначе LiveData.set не работает

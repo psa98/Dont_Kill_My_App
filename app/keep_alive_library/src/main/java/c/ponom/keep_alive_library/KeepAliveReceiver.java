@@ -43,7 +43,7 @@ public final class KeepAliveReceiver extends BroadcastReceiver {
             case ACTION_BATTERY_CHANGED:
                 if (eventReceiver.batteryEventListener!=null)
                 eventReceiver.batteryEventListener.
-                        onBatteryEvent(eventReceiver.getBatteryState(context));
+                        onBatteryEvent(eventReceiver.getBatteryState(context,intent));
                 break;
             case   ACTION_DEVICE_IDLE_MODE_CHANGED:
                 if (eventReceiver.dozeEventListener!=null)

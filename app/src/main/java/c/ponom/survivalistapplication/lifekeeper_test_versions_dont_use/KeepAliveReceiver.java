@@ -9,7 +9,6 @@ import static android.content.Intent.ACTION_BATTERY_CHANGED;
 import static android.content.Intent.ACTION_BOOT_COMPLETED;
 import static android.content.Intent.ACTION_TIME_TICK;
 import static android.os.PowerManager.ACTION_DEVICE_IDLE_MODE_CHANGED;
-import static c.ponom.survivalistapplication.Logger.formattedTimeStamp;
 import static c.ponom.survivalistapplication.Logger.registerBroadcastEvent;
 
 public final class KeepAliveReceiver extends BroadcastReceiver {
@@ -46,12 +45,11 @@ public final class KeepAliveReceiver extends BroadcastReceiver {
             case ACTION_BATTERY_CHANGED:
                 if (receiverEvents.batteryEventListener!=null)
                     receiverEvents.batteryEventListener.
-                            onBatteryEvent(receiverEvents.getBatteryState(context));
+                            onBatteryEvent(receiverEvents.getBatteryState(context,intent));
                 registerBroadcastEvent(" Battery event");
                 break;
             case ACTION_DEVICE_IDLE_MODE_CHANGED:
-                registerBroadcastEvent("\n"+ formattedTimeStamp()+ " Power mode "
-                        + receiverEvents.getPowerStateString());
+
                 if (receiverEvents.dozeEventListener!=null)
                     receiverEvents.dozeEventListener.
                             onDozeModeChange(receiverEvents.getDoseModeState(context));

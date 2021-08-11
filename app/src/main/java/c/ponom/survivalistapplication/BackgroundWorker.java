@@ -4,7 +4,6 @@ import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
-import java.time.Instant;
 import java.util.Date;
 
 import c.ponom.survivalistapplication.lifekeeper_test_versions_dont_use.LifeKeeper;
@@ -43,7 +42,7 @@ public class BackgroundWorker {
                     if (debugMode) Log.e(TAG, "detected periodic event - 90 s");});
 
         lifeKeeper.setEventListener(timestamp -> {
-            if (debugMode) Log.e(TAG, "onEvent"+Date.from ( Instant.ofEpochSecond(timestamp/1000)));
+            if (debugMode) Log.e(TAG, "onEvent"+ new Date());
         });
         receiverEvents.setBatteryEventListener(percentCharged -> {
                 Logger.appendEvent("\n broadcast event logged in receiver - battery event," +

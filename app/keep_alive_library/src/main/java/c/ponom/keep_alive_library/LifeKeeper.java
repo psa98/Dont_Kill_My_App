@@ -2,6 +2,7 @@ package c.ponom.keep_alive_library;
 
 import android.content.Context;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -181,7 +182,9 @@ public final class LifeKeeper {
     private void registerReceivers(Context context) {
         context.registerReceiver(keepAliveReceiver, new IntentFilter(ACTION_TIME_TICK));
         context.registerReceiver(keepAliveReceiver, new IntentFilter(ACTION_BATTERY_CHANGED));
-        context.registerReceiver(keepAliveReceiver, new IntentFilter(ACTION_DEVICE_IDLE_MODE_CHANGED));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            context.registerReceiver(keepAliveReceiver, new IntentFilter(ACTION_DEVICE_IDLE_MODE_CHANGED));
+        }
     }
 
     private void unregisterReceivers(Context context) {
@@ -239,7 +242,7 @@ public final class LifeKeeper {
     private synchronized void setLiveDataFromMainThread(MutableLiveData<Long> liveData,
                                                         long currentTimestamp) {
         final Looper mainLooper = Looper.getMainLooper();
-        if (mainLooper.isCurrentThread())
+        if (Looper.myLooper() == mainLooper)
             liveData.setValue(currentTimestamp);
         else{
             // переброска исполнения для воркеров в main thread, иначе LiveData.set не работает

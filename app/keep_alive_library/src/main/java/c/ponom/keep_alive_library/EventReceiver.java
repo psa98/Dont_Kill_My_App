@@ -1,7 +1,9 @@
 package c.ponom.keep_alive_library;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.os.PowerManager;
 
 @SuppressWarnings("unused")
@@ -33,18 +35,30 @@ public class EventReceiver {
     /**
      * Возвращает статус текущего  режима экономии заряда. В doze mode большинство бродкастов и воркеров
      * заблокированы и не будут вызыватья за пределами "окон" предоставленных системой.
+     * На SDK 23 и ранее не поддерживается
      * */
     public boolean getDoseModeState(Context context) {
         PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-        return pm.isDeviceIdleMode();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return pm.isDeviceIdleMode();
+        } else return false;
     }
 
+
+
+
     /**
-     * Возвращает состояние заряда батареи в процентах
+     * Возвращает состояние заряда батареи в процентах.
      * */
-    public int getBatteryState(Context context) {
-        BatteryManager bm = (BatteryManager) context.getSystemService(Context.BATTERY_SERVICE);
-        return bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+    public int getBatteryState(Context context, Intent intent) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            BatteryManager bm = (BatteryManager) context.getSystemService(Context.BATTERY_SERVICE);
+            return bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+        } else {
+            //noinspection UnnecessaryLocalVariable
+            int level = (intent != null) ? intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0) : 0;
+            return level;
+        }
     }
 
     /**

@@ -1,10 +1,10 @@
 package c.ponom.survivalistapplication.lifekeeper_test_versions_dont_use;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.os.PowerManager;
-
-import static c.ponom.survivalistapplication.Application.getAppContext;
 
 public class ReceiverEvents {
     DozeModeListener dozeEventListener;
@@ -31,20 +31,26 @@ public class ReceiverEvents {
     }
 
 
-    protected String getPowerStateString() {
-        PowerManager pm = (PowerManager) getAppContext().getSystemService(Context.POWER_SERVICE);
-        return pm.isDeviceIdleMode() ? "doze  mode on" : "doze mode off";
-    }
+
 
     public boolean getDoseModeState(Context context) {
-        PowerManager pm = (PowerManager) getAppContext().getSystemService(Context.POWER_SERVICE);
-        return pm.isDeviceIdleMode();
+        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return pm.isDeviceIdleMode();
+        } else return false;
     }
 
 
-    public int getBatteryState(Context context) {
-        BatteryManager bm = (BatteryManager) getAppContext().getSystemService(Context.BATTERY_SERVICE);
-        return bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+    public int getBatteryState(Context context, Intent intent) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        BatteryManager bm = (BatteryManager) context.getSystemService(Context.BATTERY_SERVICE);
+
+            return bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+        } else {
+            //noinspection UnnecessaryLocalVariable
+            int level = (intent != null) ? intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0) : 0;
+            return level;
+        }
     }
 
     public synchronized  void setDozeModeListener(DozeModeListener eventListener) {
