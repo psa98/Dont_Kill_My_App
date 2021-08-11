@@ -14,7 +14,6 @@ import static android.os.PowerManager.ACTION_DEVICE_IDLE_MODE_CHANGED;
 public final class KeepAliveReceiver extends BroadcastReceiver {
 
     private volatile static KeepAliveReceiver INSTANCE;
-
     private final EventReceiver eventReceiver;
 
 

@@ -12,9 +12,7 @@ import c.ponom.survivalistapplication.lifekeeper_test_versions_dont_use.Receiver
 
 import static c.ponom.survivalistapplication.Application.TAG;
 import static c.ponom.survivalistapplication.Application.debugMode;
-import static c.ponom.survivalistapplication.model.SharedPrefsRepository.DataType.STRING;
 import static c.ponom.survivalistapplication.model.SharedPrefsRepository.getParameterString;
-import static c.ponom.survivalistapplication.model.SharedPrefsRepository.saveParameter;
 
 public class BackgroundWorker {
 
@@ -54,12 +52,14 @@ public class BackgroundWorker {
                     " charge = "+percentCharged+ " %");
         });
         receiverEvents.setTickEventListener(()-> {
-            Logger.appendEvent("\n tick event  logged in receiver");
+            Logger.appendEvent("\n"+Logger.formattedTimeStamp()+
+                    " tick event  logged in receiver");
             Log.i(TAG, "tick event  logged in receiver");
         });
-        receiverEvents.setDozeModeListener(mode -> saveParameter(
-                "\n TEST - get interface event on doze mode status, mode = "
-                        +mode, "skipped", STRING));
+        receiverEvents.setDozeModeListener(mode ->
+                Logger.appendEvent("\n"+Logger.formattedTimeStamp()+
+                        " Doze mode event logged in receiver, mode="+mode));
+
         String oldSkippedEventsList = getParameterString("skipped");
         String oldEventsList = getParameterString("events");
         Logger.appendEvent("\n" + Logger.formattedTimeStamp() + " Service relaunched ");

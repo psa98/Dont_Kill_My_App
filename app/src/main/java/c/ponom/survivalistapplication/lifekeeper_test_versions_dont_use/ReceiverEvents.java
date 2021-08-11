@@ -17,7 +17,9 @@ public class ReceiverEvents {
         INSTANCE=this;
     }
 
-      void initReceiver(KeepAliveReceiver  keepAliveReceiver) {
+    void initReceiver(KeepAliveReceiver  keepAliveReceiver) {
+        if (keepAliveReceiver==null)
+            throw new IllegalStateException("Wrong EventReceiver init");
         receiver = keepAliveReceiver;
     }
 

@@ -50,16 +50,18 @@ public final class LifeKeeper {
     }
 
     /**
-     * Вызовите этот метод из application класса для обеспечения выживания  приложения в фоне
+     * Вызовите этот метод из application класса для обеспечения выживания  приложения в фоне.
      * При добавлении в манифест строки < android:name="android.permission.RECEIVE_BOOT_COMPLETE" />
      * оно так же будет автоматически перезапускаться при перезагрузке. При этом (и при любом перезапуске)
      * гарантируется вызов метода onCreate(..) Application класса, где можно возобновить необходимые
      * подписки на события.<BR>
-     * Для работы обязательно добавление раздела соотв. раздела < receiver> в манифест с указанием
-     * интент-фильтров<BR>
-     * Установите слушатели через setEventListener(), или подпишитесь на обновление лайфдат через
+     * Для обеспечения работы приложения в фоне обязательно добавление соотв. раздела < receiver>
+     * в манифест с указанием интент-фильтров. <BR>
+     *
+     * При необходимости выполнять периодические фоновые действия  возможна установка слушателей
+     * на периодические события через setEventListener(), или подписка на обновление лайфдат через
      * subscribeOnPeriodicEvents (...) subscribeOnAllEvents(), или на получение конкретных интентов
-     * в  классе EventReceiver через установку слушателей типа setBatteryEventListener(...)
+     * в классе EventReceiver через установку слушателей типа setBatteryEventListener(...)
      */
     public final synchronized void start(Context context) {
         running = true;
@@ -73,7 +75,8 @@ public final class LifeKeeper {
 
     /**
      * Временная приостановка работы ресиверов и эмиттеров событий.
-     * Не отключает автоматическую перезагрузку приложения в будущем
+     * Не отключает автоматический запуск  приложения при перезагрузке телефона
+     * в будущем
      */
         public final synchronized void pause(Context context) {
         running = false;
@@ -156,7 +159,7 @@ public final class LifeKeeper {
         }, TIMER_TASK_PERIOD * 1000);
     }
 
-
+    //
     final synchronized void launchRepeatingWorkRequest(long period) {
         OneTimeWorkRequest singleWorkRequest =
                 new OneTimeWorkRequest.Builder(RelaunchWorkRequest.class)
