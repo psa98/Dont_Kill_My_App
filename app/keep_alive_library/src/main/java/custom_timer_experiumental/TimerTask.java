@@ -1,5 +1,6 @@
 package custom_timer_experiumental;
 
+@SuppressWarnings("unused")
 public abstract class   TimerTask implements Runnable {
 /**
  * This object is used to control access to the TimerTask internals.

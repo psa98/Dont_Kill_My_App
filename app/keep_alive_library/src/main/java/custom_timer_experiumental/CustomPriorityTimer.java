@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@SuppressWarnings("RedundantThrows")
+@SuppressWarnings({"RedundantThrows", "unused"})
 public class CustomPriorityTimer {
         /**
          * The timer task queue.  This data structure is shared with the timer
@@ -52,15 +52,26 @@ public class CustomPriorityTimer {
             return nextSerialNumber.getAndIncrement();
         }
 
-        /**
-         * Creates a new timer.  The associated thread does <i>not</i>
-         * {@linkplain Thread#setDaemon run as a daemon}.
-         */
-        public CustomPriorityTimer(int priority) {
-            this("Timer-" + serialNumber(),priority);
+
+    /**
+     * Creates a new timer.  The associated thread does <i>not</i>
+     * {@linkplain Thread#setDaemon run as a daemon}.
+     */
+    public CustomPriorityTimer(int priority) {
+        this("Timer-" + serialNumber(),priority);
 
 
-        }
+    }
+
+    /**
+     * Creates a new timer.  The associated thread does <i>not</i>
+     * {@linkplain Thread#setDaemon run as a daemon}.
+     */
+    public CustomPriorityTimer() {
+        this("Timer-" + serialNumber(),Thread.NORM_PRIORITY);
+
+
+    }
 
         /**
          * Creates a new timer whose associated thread may be specified to
@@ -431,8 +442,6 @@ public class CustomPriorityTimer {
 
         TimerThread(TaskQueue queue) {
             this.queue = queue;
-
-            // todo - придумать как переделать это в параметры
         }
 
 
