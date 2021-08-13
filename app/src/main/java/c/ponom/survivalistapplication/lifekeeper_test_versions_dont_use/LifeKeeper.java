@@ -5,6 +5,7 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
@@ -24,6 +25,7 @@ import static android.content.Intent.ACTION_BATTERY_CHANGED;
 import static android.content.Intent.ACTION_TIME_TICK;
 import static android.os.PowerManager.ACTION_DEVICE_IDLE_MODE_CHANGED;
 import static android.os.PowerManager.ACTION_POWER_SAVE_MODE_CHANGED;
+import static c.ponom.survivalistapplication.Application.TAG;
 
 
 @SuppressWarnings({"unused", "RedundantSuppression"})
@@ -32,10 +34,13 @@ public final class LifeKeeper {
     private static final long INFREQUENT_REQUEST_PERIOD = 240;
     private static final long MINIMUM_PERIOD = 60;
     private static final long TIMER_TASK_PERIOD = 15;
+
+
     private  WorkManager workManager;
     private static volatile LifeKeeper INSTANCE;
     private final ArrayList<MutableLiveData<Long>> subscriptions = new ArrayList<>();
     private final ArrayList<PeriodicSubscription> periodicSubscriptions = new ArrayList<>();
+
     private Timer timer = new Timer();
     private boolean running = false;
     KeepAliveReceiver keepAliveReceiver = KeepAliveReceiver.getInstance();
@@ -181,28 +186,26 @@ public final class LifeKeeper {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-
+                Log.e(TAG, "run: priority="+Thread.currentThread().getPriority() );
                 // переброска исполнения в main thread, иначе LiveData.set не работает
                 Handler handler = new Handler(Looper.getMainLooper());
                 handler.post(() -> {
                     Logger.appendEvent("\n" + Logger.formattedTimeStamp() + " Timer task");
                     emitEvents();
-
                 });
             }
         }, TIMER_TASK_PERIOD * 1000);
 
     }
 
+
     private static class PeriodicSubscription {
         private final MutableLiveData<Long> liveData;
         private long periodicity;
         private long previousSubscriptionEventTimestamp;
-
         public PeriodicSubscription(MutableLiveData<Long> liveData) {
             this.liveData = liveData;
         }
-
         public PeriodicSubscription(long seconds) {
             liveData = new MutableLiveData<>();
             periodicity = seconds;
