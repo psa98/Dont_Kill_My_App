@@ -3,7 +3,7 @@ package c.ponom.survivalistapplication;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import c.ponom.survivalistapplication.lifekeeper_test_versions_dont_use.LifeKeeper;
+import c.ponom.keep_alive_library.LifeKeeper;
 
 
 public class Application extends android.app.Application {
@@ -30,6 +30,8 @@ public class Application extends android.app.Application {
         LifeKeeper.getInstance().start(this);
         BackgroundWorker backGroundWorker = new BackgroundWorker();
         backGroundWorker.backgroundProcessorSetup();
+        Logger.registerInSkippedLogEvent("\n"+Logger.formattedTimeStamp()
+                +" Application relaunched");
     }
 }
 

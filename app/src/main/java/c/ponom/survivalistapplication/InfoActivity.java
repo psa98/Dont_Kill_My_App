@@ -13,7 +13,7 @@ import androidx.lifecycle.LiveData;
 import java.util.Date;
 import java.util.Locale;
 
-import c.ponom.survivalistapplication.lifekeeper_test_versions_dont_use.LifeKeeper;
+import c.ponom.keep_alive_library.LifeKeeper;
 import c.ponom.survivalistapplication.model.SharedPrefsRepository;
 
 import static c.ponom.survivalistapplication.model.SharedPrefsRepository.DataType.STRING;

@@ -1,7 +1,7 @@
 package c.ponom.keep_alive_library;
 
 @SuppressWarnings("unused")
-public abstract class BackgroundWorker {
+public abstract class BackgroundProcessor {
 
 
     /**
@@ -17,4 +17,13 @@ public abstract class BackgroundWorker {
      */
     public abstract void backgroundProcessorSetup();
 
+    public abstract void backgroundProcessorStart();
+
+    public abstract void backgroundProcessorStop();
+
+    public abstract void backgroundProcessorRelease();
+
+
 }
+
+
