@@ -12,7 +12,7 @@ public class Application extends android.app.Application {
     public static final String TAG = "LifeKeeper";
     private static SharedPreferences sharedPreferences;
     private static android.app.Application thisApplication;
-    public static final boolean debugMode = (BuildConfig.DEBUG);
+    public static final boolean debugMode = true;
 
     public static SharedPreferences getSharedPreferences() {
         return sharedPreferences;
@@ -30,8 +30,7 @@ public class Application extends android.app.Application {
         LifeKeeper.getInstance().start(this);
         BackgroundWorker backGroundWorker = new BackgroundWorker();
         backGroundWorker.backgroundProcessorSetup();
-        Logger.registerInSkippedLogEvent("\n"+Logger.formattedTimeStamp()
-                +" Application relaunched");
+
     }
 }
 

@@ -72,7 +72,13 @@ public class BackgroundWorker extends BackgroundProcessor {
 
         String oldSkippedEventsList = getParameterString("skipped");
         String oldEventsList = getParameterString("events");
-        Logger.appendEvent("\n" + Logger.formattedTimeStamp() + " Service relaunched ");
+        Logger.appendEvent("\n" + Logger.formattedTimeStamp()
+                + " Service relaunched ");
+
+        Logger.registerInSkippedLogEvent("\n" + Logger.formattedTimeStamp()
+                + " Service relaunched ");
+
+
         Logger.liveEventsList.postValue(oldEventsList);
         Logger.liveSkippedEventsList.postValue(oldSkippedEventsList);
     }

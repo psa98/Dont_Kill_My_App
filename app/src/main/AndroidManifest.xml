@@ -2,9 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="c.ponom.survivalistapplication">
 
-    <uses-permission
-        android:name="android.permission.RECEIVE_BOOT_COMPLETE"
-/>
+
 
     <application
         android:name=".Application"
