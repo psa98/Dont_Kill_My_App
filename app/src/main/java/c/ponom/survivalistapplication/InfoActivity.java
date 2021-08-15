@@ -53,7 +53,7 @@ public class InfoActivity extends AppCompatActivity {
             if (value == null) return;
             Date date = new Date();
             date.setTime(value);
-            lastEvent.setText(String.format(Locale.getDefault(), "Last event%tT", date));
+            lastEvent.setText(String.format(Locale.getDefault(), "Last event %tT", date));
         });
     }
 

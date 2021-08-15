@@ -53,14 +53,14 @@ public class BackgroundWorker extends BackgroundProcessor {
         eventReceiver.setBatteryEventListener(percentCharged -> {
                 Logger.appendEvent("\n"
                         +Logger.formattedTimeStamp()+
-                        "\n broadcast event logged in receiver - battery event,"
+                        " Broadcast event logged in receiver - battery event,"
                         + " charge = "+percentCharged+ " %");
             Log.i(TAG, "broadcast event logged  in receiver - battery event," +
                     " charge = "+percentCharged+ " %");
         });
         eventReceiver.setTickEventListener(()-> {
             Logger.appendEvent("\n"+Logger.formattedTimeStamp()+
-                    " tick event  logged in receiver");
+                    " Tick event  logged in receiver");
             Log.i(TAG, "tick event  logged in receiver");
         });
         eventReceiver.setDozeModeListener(mode -> {
