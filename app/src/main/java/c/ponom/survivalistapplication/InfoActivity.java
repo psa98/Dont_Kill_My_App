@@ -1,6 +1,7 @@
 package c.ponom.survivalistapplication;
 
 import android.annotation.SuppressLint;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
@@ -34,6 +35,9 @@ public class InfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         list = findViewById(R.id.logList);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            list.setShowSoftInputOnFocus(false);
+        }
         skippedList = findViewById(R.id.skippedList);
         lastEvent = findViewById(R.id.lastEvent);
         LiveData<String> eventList = Logger.liveEventsList;
