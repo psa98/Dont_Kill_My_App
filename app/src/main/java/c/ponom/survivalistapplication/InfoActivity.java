@@ -76,7 +76,7 @@ public class InfoActivity extends AppCompatActivity {
     private void showSkippedAndScrollToEnd(String newList) {
         skippedList.setText(newList);
         if (!newList.isEmpty())
-            skippedList.setSelection(newList.length() - 2, newList.length() - 1);
+            skippedList.setSelection(newList.length() - 1, newList.length());
         skippedList.clearFocus();
     }
 
