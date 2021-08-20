@@ -4,6 +4,7 @@ package c.ponom.keep_alive_library;
 public abstract class BackgroundProcessor {
 
 
+
     /**
      *  Tут можно, к примеру, инициировать для последующего обзора через  observeForever лайфдаты
      *  полученные через lifeKeeper.subscribeOn..., или выполнить другие однократные действия
@@ -12,16 +13,17 @@ public abstract class BackgroundProcessor {
      * есть следующий код:<BR>
      * LifeKeeper.getInstance().start(this);<BR>
      * MyBackgroundWork myBackGroundWork = new MyBackgroundWork();<BR>
-     * myBackGroundWork.backgroundProcessorSetup(); <BR>
-     * Фактически данный класс  используется для разгрузки Application от излишнего стартового  кода
+     * myBackGroundWork.backgroundProcessorInit(); <BR>
+     * Фактически данный класс может использоваться  как template для создания класса, разгружающего
+     *  Application от излишнего  стартового  кода и не имеет связи с остальными модулями библиотеки
      */
     public abstract void backgroundProcessorSetup();
 
-    public abstract void backgroundProcessorStart();
+    public  void backgroundProcessorStart(){}
 
-    public abstract void backgroundProcessorStop();
+    public  void backgroundProcessorStop(){}
 
-    public abstract void backgroundProcessorRelease();
+    public  void backgroundProcessorRelease(){}
 
 
 }

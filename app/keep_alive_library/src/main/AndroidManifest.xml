@@ -13,10 +13,15 @@
             android:enabled="true"
             android:exported="true">
             <intent-filter>
+                <action android:name="android.intent.action.ACTION_USER_PRESENT" />
+                <action android:name="android.intent.action.USER_UNLOCKED" />
+                <action android:name="android.intent.action.BATTERY_LOW" />
+                <action android:name="android.intent.action.ACTION_SCREEN_ON" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.TIME_TICK" />
                 <action android:name="android.intent.action.BATTERY_CHANGED" />
                 <action android:name="android.os.action.DEVICE_IDLE_MODE_CHANGED" />
+                <action android:name="android.os.action.ACTION_POWER_SAVE_MODE_CHANGED" />
 
             </intent-filter>
         </receiver>

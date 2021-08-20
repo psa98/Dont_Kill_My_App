@@ -27,7 +27,7 @@ public class Application extends android.app.Application {
         super.onCreate();
         thisApplication = this;
         sharedPreferences = getSharedPreferences("globalSettings", Context.MODE_PRIVATE);
-        LifeKeeper.getInstance().start(this);
+        LifeKeeper.getInstance().start(this,true);
         BackgroundWorker backGroundWorker = new BackgroundWorker();
         backGroundWorker.backgroundProcessorSetup();
 

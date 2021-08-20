@@ -10,6 +10,7 @@
 Для активации режима "выживания приложения" достаточно добавить в onCreate() Application класса
 следующий код: 
 LifeKeeper lifeKeeper = LifeKeeper.getInstance();
+
 lifeKeeper.start(this);
 
 Дополнительно можно, к примеру, инициировать для последующего обзора через  observeForever лайфдаты
