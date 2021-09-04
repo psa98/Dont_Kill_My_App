@@ -11,11 +11,9 @@ import java.util.Set;
 
 public final class RelaunchWorkRequest extends Worker {
 
-
     public RelaunchWorkRequest(@NonNull Context appContext, @NonNull WorkerParameters workerParams) {
         super(appContext, workerParams);
     }
-
 
     @NonNull
     @Override
@@ -36,6 +34,5 @@ public final class RelaunchWorkRequest extends Worker {
         lifeKeeper.launchTimerTask();
         lifeKeeper.emitEvents();
         return Result.success();
-
     }
 }

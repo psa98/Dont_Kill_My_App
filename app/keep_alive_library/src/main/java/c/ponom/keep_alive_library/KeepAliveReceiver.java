@@ -44,7 +44,7 @@ public final class KeepAliveReceiver extends BroadcastReceiver {
             case ACTION_BATTERY_CHANGED:
                 if (eventReceiver.batteryEventListener!=null)
                     eventReceiver.batteryEventListener.
-                            onBatteryEvent(eventReceiver.getBatteryState(context,intent));
+                            onBatteryEvent(eventReceiver.getCurrentBatteryCharge(context));
                 break;
             case   ACTION_DEVICE_IDLE_MODE_CHANGED:
                 final boolean doseModeState = eventReceiver.getDoseModeState(context);
@@ -57,7 +57,6 @@ public final class KeepAliveReceiver extends BroadcastReceiver {
                 break;
             case   ACTION_POWER_SAVE_MODE_CHANGED:
                 final boolean powerSaveState = eventReceiver.getPowerSaveMode(context);
-
         }
         LifeKeeper.getInstance().emitEvents();
     }

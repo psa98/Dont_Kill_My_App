@@ -11,26 +11,18 @@ public class Application extends android.app.Application {
 
     public static final String TAG = "LifeKeeper";
     private static SharedPreferences sharedPreferences;
-    private static android.app.Application thisApplication;
     public static final boolean debugMode = true;
-
     public static SharedPreferences getSharedPreferences() {
         return sharedPreferences;
-    }
-
-    public static android.app.Application getAppContext() {
-        return thisApplication;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        thisApplication = this;
         sharedPreferences = getSharedPreferences("globalSettings", Context.MODE_PRIVATE);
         LifeKeeper.getInstance().start(this,true);
         BackgroundWorker backGroundWorker = new BackgroundWorker();
-        backGroundWorker.backgroundProcessorSetup();
-
+        backGroundWorker.backgroundProcessorInit();
     }
 }
 

@@ -15,9 +15,9 @@ import java.util.Date;
 import java.util.Locale;
 
 import c.ponom.keep_alive_library.LifeKeeper;
-import c.ponom.survivalistapplication.model.SharedPrefsRepository;
+import c.ponom.survivalistapplication.model.SharedPrefsDAO;
 
-import static c.ponom.survivalistapplication.model.SharedPrefsRepository.DataType.STRING;
+import static c.ponom.survivalistapplication.model.SharedPrefsDAO.DataType.STRING;
 
 @SuppressLint("SetTextI18n")
 public class InfoActivity extends AppCompatActivity {
@@ -82,8 +82,8 @@ public class InfoActivity extends AppCompatActivity {
 
 
     public synchronized void clearEvents(View view) {
-        SharedPrefsRepository.saveParameter("", "events", STRING);
-        SharedPrefsRepository.saveParameter("", "skipped", STRING);
+        SharedPrefsDAO.saveParameter("", "events", STRING);
+        SharedPrefsDAO.saveParameter("", "skipped", STRING);
         list.setText("");
         skippedList.setText("");
     }

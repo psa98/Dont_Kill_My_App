@@ -32,46 +32,41 @@ import static android.content.Intent.ACTION_USER_UNLOCKED;
 import static android.os.PowerManager.ACTION_DEVICE_IDLE_MODE_CHANGED;
 import static android.os.PowerManager.ACTION_POWER_SAVE_MODE_CHANGED;
 
-
 @SuppressWarnings({"unused", "RedundantSuppression"})
 public final class LifeKeeper {
+
     private static volatile LifeKeeper INSTANCE;
 
     private static final long FREQUENT_REQUEST_PERIOD = 55;
     private static final long INFREQUENT_REQUEST_PERIOD = 230;
-    private static final long RARE_REQUEST_PERIOD = 590;
+    private static final long RARE_REQUEST_PERIOD = 960;
     private static final long MINIMUM_LIFEDATA_PERIOD = 60;
     private static final long TIMER_TASK_PERIOD = 15;
     public static float AUDIO_VOLUME = 0.01f;
     public static int AUDIO_PAUSE = 220;
-
     private  static WorkManager workManager;
     private Timer timer = new Timer();
     boolean running = false;
     private LifeKeeperEventsListener eventListener;
-    private  SilencePlayer audioPlayer;
+    private SilencePlayer audioPlayer;
     private boolean useAudioHack = false;
     private boolean initialized =false;
     private SharedPreferencesRepository sharedPreferencesRepository;
-
-
     private int minBatteryOptimizationLevel=15;
-
     private final ArrayList<MutableLiveData<Long>> subscriptions = new ArrayList<>();
     private final ArrayList<PeriodicSubscription> periodicSubscriptions = new ArrayList<>();
     private final KeepAliveReceiver keepAliveReceiver= KeepAliveReceiver.getInstance();
-    private long lastEventInstant = new Date().getTime();
 
 
-    @SuppressWarnings({"ConstantConditions", "deprecation"})
     private LifeKeeper() {
         EventReceiver instance = EventReceiver.getInstance();
         instance.setInternalDozeModeListener((context, mode) -> changeDozeAudiohackState(context,mode));
+        //noinspection deprecation
         workManager=WorkManager.getInstance();
-        // про этот deprecated вариант без  параметра:
+        // про этот вариант без  параметра:
         // may be null in unusual circumstances where you have disabled automatic initialization
         // and have failed to manually call initialize(Context, Configuration).
-
+        //noinspection ConstantConditions
         if (workManager!=null) workManager.cancelAllWork();
     }
 
@@ -100,6 +95,8 @@ public final class LifeKeeper {
             useAudioHack=extremeDozeAvoidance;
         } else useAudioHack =false;
     }
+
+
 
     /**
      * Вызовите этот метод из application класса для обеспечения выживания  приложения в фоне.
@@ -132,15 +129,24 @@ public final class LifeKeeper {
 
 
 
-
+    /**
+     * Вызовите этот метод из application класса для обеспечения выживания  приложения в фоне,
+     * без примерения  агрессивного метода  сохранения жизни приложения(аудиохака)
+     * Ппри любом перезапуске  гарантируется вызов метода onCreate(..) Application класса,
+     * где можно возобновить необходимые подписки на события.<BR>
+     * При необходимости выполнять периодические фоновые действия  возможна установка слушателей
+     * на периодические события через setEventListener(), или подписка на обновление лайфдат через
+     * subscribeOnPeriodicEvents (...) subscribeOnAllEvents(), или на получение конкретных интентов
+     * в классе EventReceiver через установку слушателей типа setBatteryEventListener(...)
+     */
     public void start(Context context){
         start(context,false);
     }
 
     /**
-     * Временная приостановка работы ресиверов и эмиттеров событий.
-     * Не отключает автоматический запуск  приложения при перезагрузке телефона
-     * в будущем
+     * Временная приостановка работы ресиверов и эмиттеров событий, и фоновой работы методов
+     * сохранения жизни приложения
+     * Не отключает автоматический запуск  приложения при перезагрузке телефона  в будущем
      */
     void pause(Context context) {
         initLifeKeeper(context);
@@ -151,8 +157,9 @@ public final class LifeKeeper {
 
     /**
      * Подготовка класса к работе. Позволяет выполнить последующую подписку на получение событий
-     * через получнеие liveData объектов. Не меняет текущего уровня поддержки активности приложения
-     * Вызов метода не обязателен,можно использовать вызов метода start(Context...).
+     * через получение liveData объектов. Не меняет текущего уровня поддержки активности приложения
+     * и не запускает поддержку методов сохранения жизни приложения.
+     * Вызов метода не обязателен,можно сразу использовать вызов метода start(Context...).
      */
     public void init(Context context) {
         initLifeKeeper(context);
@@ -170,7 +177,6 @@ public final class LifeKeeper {
      * 5-15 секунд. <BR> Для китайских телефонов  можно ожидать очень проблемной работы в фоне без
      * отключения режима экономии для приложения
      * */
-
     @NotNull
     public LiveData<Long> subscribeOnAllEvents() {
         checkState();
@@ -184,7 +190,7 @@ public final class LifeKeeper {
 
     /**
      * Данные в возвращаемой лайфдате (unix time время в мс) обновляются при первой возможности,
-     * с максимально возможной частотой, позволяемой системой но не чаще заданного периода
+     * с максимально возможной частотой, позволяемой системой, но не чаще заданного периода
      * (минимум - 60 секунд).<BR>
      * Гарантий вызова события с заданной частотой дать невозможно, система может убить или
      * остановить приложение в любой момент. Типичные задержки вызова  (заданное время+задержка)
@@ -232,6 +238,19 @@ public final class LifeKeeper {
         this.eventListener = eventListener;
     }
 
+    public int getMinBatteryOptimizationLevel() {
+        return minBatteryOptimizationLevel;
+    }
+
+    /**
+     * @param minBatteryOptimizationLevel
+     * Уровень заряда батареи в %, ниже которого прекращается использование агрессивного метода
+     * сохранения жизни приложения, по умолчанию 15%
+     */
+    public void setMinBatteryOptimizationLevel(int minBatteryOptimizationLevel) {
+        this.minBatteryOptimizationLevel = minBatteryOptimizationLevel;
+    }
+
     final void launchTimerTask() {
         if (!running) return;
         timer.cancel();
@@ -245,7 +264,7 @@ public final class LifeKeeper {
         }, TIMER_TASK_PERIOD * 1000);
     }
 
-    //
+
     final synchronized void launchRepeatingWorkRequest(long period) {
         OneTimeWorkRequest singleWorkRequest =
                 new OneTimeWorkRequest.Builder(RelaunchWorkRequest.class)
@@ -260,11 +279,9 @@ public final class LifeKeeper {
         if (!running) return;
         long currentInstant = new Date().getTime();
         if (sharedPreferencesRepository!=null) {
-            lastEventInstant = sharedPreferencesRepository.getParameterLong("lastEventDate");
             sharedPreferencesRepository.saveParameter(currentInstant, "lastEventDate",
                     DataType.LONG);
         }
-        long timeBetweenEvents = currentInstant-lastEventInstant;
         // запись в SP  намекает системе что приложение делает что-то полезное
         onEachEvent(currentInstant);
         checkAllEventsSubscriptions(currentInstant);
@@ -318,7 +335,6 @@ public final class LifeKeeper {
         public PeriodicSubscription(MutableLiveData<Long> liveData) {
             this.liveData = liveData;
         }
-
         public PeriodicSubscription(long seconds) {
             liveData = new MutableLiveData<>();
             periodicity = seconds;
@@ -370,17 +386,18 @@ public final class LifeKeeper {
         //подход такой - при переходе в режим on - немедленно включаем звук, если прочие условия выполняются.
         // при выключении - останавливаем проигрыватель
         final EventReceiver eventReceiver = EventReceiver.getInstance();
+        if (eventReceiver.getCurrentBatteryCharge(context)<minBatteryOptimizationLevel)
+            return;
         if (!useAudioHack||!running) return;
-        if (enabled) audioPlayer.launchNewPeriodicPlay(context, AUDIO_PAUSE);
+        if (enabled) audioPlayer.launchNewPeriodicPlay(context, R.raw.silence2minwav, AUDIO_PAUSE);
         else audioPlayer.stopPlayer();
-
-
     }
 
     private void initLifeKeeper(Context context) {
-        if (!initialized) sharedPreferencesRepository = new SharedPreferencesRepository(context);
+        if (initialized) return;
+        sharedPreferencesRepository = new SharedPreferencesRepository(context);
         initialized = true;
-        audioPlayer = new SilencePlayer(context, R.raw.silence2min);
+        audioPlayer = new SilencePlayer(context, R.raw.silence2minwav);
         audioPlayer.setVolume(AUDIO_VOLUME);
     }
 
@@ -388,22 +405,6 @@ public final class LifeKeeper {
         if (initialized=false)
             throw new
                     IllegalStateException("LifeKeeper isn't initialized." +
-                    " Use init(Context context) or start(Context context) before accessing API");
+                    " Use init(Context context) or start(Context context....) before accessing API");
     }
-
-    public int getMinBatteryOptimizationLevel() {
-        return minBatteryOptimizationLevel;
-    }
-
-    /**
-     * @param minBatteryOptimizationLevel
-     * Уровень заряда батареи в %, ниже которого прекращается использование агрессивного метода
-     * сохранения жизни приложения, по умолчанию 15%
-     */
-    public void setMinBatteryOptimizationLevel(int minBatteryOptimizationLevel) {
-        this.minBatteryOptimizationLevel = minBatteryOptimizationLevel;
-    }
-
-
-
 }

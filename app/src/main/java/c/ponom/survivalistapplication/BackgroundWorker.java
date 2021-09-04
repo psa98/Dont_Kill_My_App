@@ -12,7 +12,7 @@ import c.ponom.keep_alive_library.LifeKeeper;
 
 import static c.ponom.survivalistapplication.Application.TAG;
 import static c.ponom.survivalistapplication.Application.debugMode;
-import static c.ponom.survivalistapplication.model.SharedPrefsRepository.getParameterString;
+import static c.ponom.survivalistapplication.model.SharedPrefsDAO.getParameterString;
 
 public class BackgroundWorker extends BackgroundProcessor {
 
@@ -27,7 +27,7 @@ public class BackgroundWorker extends BackgroundProcessor {
      *
      * Фактически данный класс  используется только для разгрузки Application от излишнего стартового  кода
      */
-    public void backgroundProcessorSetup() {
+    public void backgroundProcessorInit() {
         EventReceiver eventReceiver = EventReceiver.getInstance();
         LifeKeeper lifeKeeper = LifeKeeper.getInstance();
         lifeKeeper.subscribeOnAllEvents()

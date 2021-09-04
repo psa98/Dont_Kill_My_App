@@ -9,12 +9,16 @@ import java.util.Map;
 import static c.ponom.survivalistapplication.Application.getSharedPreferences;
 
 
-@SuppressWarnings({"unused", "RedundantSuppression"})
+@SuppressWarnings({"unused"})
 @SuppressLint("ApplySharedPref")
-public class SharedPrefsRepository {
+public class SharedPrefsDAO {
 
+    /* цель класса - обеспечить обязательное указание вида параметра в методе
+     сохранения и fail fast контроль за его типом. При этом обеспечивается единая точка входа
+     для сохранения всех типов  параметров
+    */
 
-    static public synchronized boolean hasParameterSet(String key) {
+    public static synchronized boolean hasParameterSet(String key) {
         return getSharedPreferences().contains(key);
     }
 
@@ -24,7 +28,6 @@ public class SharedPrefsRepository {
         return Collections.unmodifiableMap(map);
     }
 
-    @SuppressWarnings("FieldCanBeLocal")
     public enum DataType {
 
         BOOLEAN(false, Boolean.TYPE),
@@ -34,17 +37,12 @@ public class SharedPrefsRepository {
         STRING("", String.class);
 
         private final Object defaultValue;
-        private final Type type;
 
         DataType(Object defaultValue, Type type) {
             this.defaultValue = defaultValue;
-            this.type = type;
         }
     }
 
-    // цель всего этого - обеспечить обязательное указание вида параметра в методе
-    // сохранения и fail fast контроль за его типом. При этом обеспечивается единая точка входа
-    // для всех параметров
 
     public static synchronized void  saveParameter(Object parameter, String key, DataType parameterType){
 

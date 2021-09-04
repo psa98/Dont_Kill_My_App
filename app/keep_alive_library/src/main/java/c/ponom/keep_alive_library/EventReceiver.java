@@ -37,7 +37,6 @@ public class EventReceiver {
                 DefaultValue);
         int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE,
                 100);
-
         return  calculateBatteryPercentage(level, scale);
     }
 
@@ -52,11 +51,10 @@ public class EventReceiver {
     /**
      * Возвращает статус текущего  режима экономии заряда. В doze mode большинство бродкастов и воркеров
      * заблокированы и не будут вызыватья за пределами "окон" предоставленных системой.
-     * На SDK 23 и ранее не поддерживается
+     * Ранее SDK 23 не поддерживается
      * */
     public boolean getDoseModeState(@NotNull Context context) {
         PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return pm.isDeviceIdleMode();
         } else return false;
@@ -70,31 +68,11 @@ public class EventReceiver {
 
     }
 
-
     void initReceiver(KeepAliveReceiver keepAliveReceiver) {
         if (keepAliveReceiver==null)
             throw new IllegalStateException("Wrong EventReceiver init");
         receiver = keepAliveReceiver;
     }
-
-
-    /**
-     * Возвращает состояние заряда батареи в процентах.
-     *
-     * */
-    float getBatteryState(Context context, Intent intent) {
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            BatteryManager bm = (BatteryManager) context.getSystemService(Context.BATTERY_SERVICE);
-            return bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
-        } else {
-            int level = (intent != null) ? intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0) : 0;
-            return (float) level;
-        }
-
-    }
-
-
 
     /**
      * Установить слушатель на соответствующий тип событий
@@ -121,6 +99,11 @@ public class EventReceiver {
         tickEventListener = eventListener;
     }
 
+    void setInternalDozeModeListener(InternalDozeModeListener eventListener) {
+        internalDozeModeListener= eventListener;
+    }
+
+
     public interface DozeModeListener {
         void  onDozeModeChange(boolean mode);
     }
@@ -128,6 +111,7 @@ public class EventReceiver {
     public interface BatteryEventListener {
         void  onBatteryEvent(float percentCharged);
     }
+
 
     public interface TickEventListener {
         void  onTickEvent();
@@ -137,14 +121,9 @@ public class EventReceiver {
         void onDozeModeChangeInternal(Context context, boolean mode);
     }
 
-    void setInternalDozeModeListener(InternalDozeModeListener eventListener) {
-        internalDozeModeListener= eventListener;
-    }
 
 
     private  float  calculateBatteryPercentage(int level, int scale) {
         return Math.round((level / (float) scale) * 1000)/10f;
     }
-
-
 }

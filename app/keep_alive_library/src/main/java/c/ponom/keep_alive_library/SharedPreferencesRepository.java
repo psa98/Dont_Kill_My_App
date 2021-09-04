@@ -15,17 +15,9 @@ public class SharedPreferencesRepository {
 
     private SharedPreferences sharedPreferences;
 
-
-
-    public synchronized boolean hasParameterSet(String key) {
-        return sharedPreferences.contains(key);
-    }
-
-    public synchronized Map<String, ?> getPreferencesAsMap() {
-
-        Map<String, ?> map = sharedPreferences.getAll();
-        return Collections.unmodifiableMap(map);
-    }
+    // цель класса -  обеспечить обязательное указание вида параметра в методе
+    // сохранения и fail fast контроль за его типом. При этом обеспечивается единая точка входа
+    // для сохранения всех параметров
 
     public SharedPreferencesRepository(Context context) {
         sharedPreferences = context.getSharedPreferences("live_keeper_library",Context.MODE_PRIVATE);
@@ -34,28 +26,26 @@ public class SharedPreferencesRepository {
     private SharedPreferencesRepository() {
 
     }
-
-    @SuppressWarnings("FieldCanBeLocal")
     public enum DataType {
-
         BOOLEAN(false, Boolean.TYPE),
         FLOAT(0f, Float.TYPE),
         INT(0, Integer.TYPE),
         LONG(0L, Long.TYPE),
         STRING("", String.class);
-
         private final Object defaultValue;
-        private final Type type;
-
         DataType(Object defaultValue, Type type) {
             this.defaultValue = defaultValue;
-            this.type = type;
         }
     }
 
-    // цель всего этого - обеспечить обязательное указание вида параметра в методе
-    // сохранения и fail fast контроль за его типом. При этом обеспечивается единая точка входа
-    // для всех параметров
+    public synchronized boolean hasParameterSet(String key) {
+        return sharedPreferences.contains(key);
+    }
+
+    public synchronized Map<String, ?> getPreferencesAsMap() {
+        Map<String, ?> map = sharedPreferences.getAll();
+        return Collections.unmodifiableMap(map);
+    }
 
     public synchronized void  saveParameter(Object parameter, String key, DataType parameterType){
 
@@ -72,8 +62,8 @@ public class SharedPreferencesRepository {
             case  INT:
                 sharedPreferences.edit().putInt(key, (int)parameter).commit();
                 break;
-           case  STRING:
-               sharedPreferences.edit().putString(key, (String)parameter).commit();
+            case  STRING:
+                sharedPreferences.edit().putString(key, (String)parameter).commit();
         }
     }
 
@@ -96,6 +86,4 @@ public class SharedPreferencesRepository {
     public synchronized float getParameterFloat (String key){
         return sharedPreferences.getFloat(key, (float) DataType.FLOAT.defaultValue);
     }
-
-
 }

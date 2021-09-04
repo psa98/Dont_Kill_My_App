@@ -9,10 +9,10 @@ import android.os.Looper;
 
 @SuppressWarnings("unused")
 public class SilencePlayer {
+
     static private MediaPlayer player;
     boolean playerPlaying = false;
     int audioResourceId;
-    int logCounter;
 
 
 
@@ -28,7 +28,7 @@ public class SilencePlayer {
 
     public void setVolume(float volume){
         if (player != null)
-        player.setVolume(volume,0);
+            player.setVolume(volume,0);
         // тишину можно и в моно поиграть для экономии
     }
 
@@ -65,24 +65,14 @@ public class SilencePlayer {
         }
     }
 
-    //другой звук, другая пауза
     public void launchNewPeriodicPlay(Context context,int audioResource, int pause){
         audioResourceId = audioResource;
-        launchNewPeriodicPlay(context, pause);
-
-    }
-
-    /// тот же звук, другая пауза.
-    public void launchNewPeriodicPlay(Context context, int pause){
         releasePlayer();
         player =MediaPlayer.create(context, audioResourceId);
         startPlayer(context);
         player.setOnCompletionListener(mp -> {
             Runnable playAgain = () -> {
-                logCounter++;
                 if (playerPlaying) startPlayer(context);
-                //if (logCounter % LOGGING_DIVIDER ==0)
-                LifeKeeper.getInstance().emitEvents();
                 LifeKeeper.getInstance().emitEvents();
             };
             Handler handler = new Handler(Looper.getMainLooper());
@@ -90,5 +80,8 @@ public class SilencePlayer {
         });
     }
 
-    public boolean isPlayerPlayingState() { return player.isPlaying(); }
+    public boolean isPlayerPlayingState() {
+        return player.isPlaying();
+    }
+
 }

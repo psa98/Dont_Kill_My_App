@@ -2,11 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="c.ponom.survivalistapplication">
 
-
-
     <application
+        android:allowBackup="false"
         android:name=".Application"
-        android:allowBackup= "false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -17,11 +15,5 @@
                  <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-
     </application>
-
-
-
-
 </manifest>

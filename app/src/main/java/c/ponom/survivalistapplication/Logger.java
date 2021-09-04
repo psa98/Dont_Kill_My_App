@@ -9,15 +9,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import c.ponom.survivalistapplication.model.SharedPrefsRepository;
+import c.ponom.survivalistapplication.model.SharedPrefsDAO;
 
 import static c.ponom.survivalistapplication.Application.TAG;
 import static c.ponom.survivalistapplication.Application.debugMode;
-import static c.ponom.survivalistapplication.model.SharedPrefsRepository.DataType.LONG;
-import static c.ponom.survivalistapplication.model.SharedPrefsRepository.DataType.STRING;
-import static c.ponom.survivalistapplication.model.SharedPrefsRepository.getParameterLong;
-import static c.ponom.survivalistapplication.model.SharedPrefsRepository.getParameterString;
-import static c.ponom.survivalistapplication.model.SharedPrefsRepository.saveParameter;
+import static c.ponom.survivalistapplication.model.SharedPrefsDAO.DataType.LONG;
+import static c.ponom.survivalistapplication.model.SharedPrefsDAO.DataType.STRING;
+import static c.ponom.survivalistapplication.model.SharedPrefsDAO.getParameterLong;
+import static c.ponom.survivalistapplication.model.SharedPrefsDAO.getParameterString;
+import static c.ponom.survivalistapplication.model.SharedPrefsDAO.saveParameter;
 
 public class Logger {
 
@@ -26,12 +26,6 @@ public class Logger {
     static final MutableLiveData<String> liveEventsList = new MutableLiveData<>();
     static final MutableLiveData<String> liveSkippedEventsList = new MutableLiveData<>();
 
-
-
-    public static void registerBroadcastEvent(String intentTypeMessage) {
-        String eventString = "\n" + formattedTimeStamp() + intentTypeMessage;
-        appendEvent(eventString);
-    }
 
     public static synchronized void appendEvent(String eventString) {
         String oldEventsList = getParameterString("events");
@@ -48,11 +42,11 @@ public class Logger {
     private static void testForSkippedEvents() {
         Date currentTimeDate = new Date();
         Date lastEventDate = new Date();
-        if (SharedPrefsRepository.hasParameterSet("lastEvent")) {
+        if (SharedPrefsDAO.hasParameterSet("lastEvent")) {
             lastEventDate.setTime(getParameterLong("lastEvent"));
             if (debugMode) Log.e(TAG, "testForSkippedEvents: "+ lastEventDate +" / \n "+currentTimeDate );
          }
-        SharedPrefsRepository.saveParameter(currentTimeDate.getTime(), "lastEvent", LONG);
+        SharedPrefsDAO.saveParameter(currentTimeDate.getTime(), "lastEvent", LONG);
         long secondsBetween = currentTimeDate.getTime() / 1000 - lastEventDate.getTime() / 1000;
         if (debugMode) Log.i(TAG, "testForSkippedEvents: seconds "+ secondsBetween);
         if (secondsBetween > EVENT_WAS_SKIPPED_TIME) {
@@ -69,11 +63,6 @@ public class Logger {
         }
     }
 
-    public static void registerWorkerEvent(String type) {
-        String eventString = "\n" + formattedTimeStamp() + ", worker event " + type;
-        appendEvent(eventString);
-
-    }
 
     public static String formattedTimeStamp() {
         @SuppressLint("SimpleDateFormat")
@@ -98,7 +87,6 @@ public class Logger {
         String skippedLogString = getParameterString("skipped");
         liveSkippedEventsList.postValue(skippedLogString);
     }
-
 
 }
 

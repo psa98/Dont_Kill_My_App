@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="c.ponom.keep_alive_library">
-
     <uses-permission
         android:name="android.permission.RECEIVE_BOOT_COMPLETE" />
-
     <application>
-
-
         <receiver
             android:name=".KeepAliveReceiver"
             android:enabled="true"
@@ -25,8 +21,5 @@
 
             </intent-filter>
         </receiver>
-
-
     </application>
-
 </manifest>
