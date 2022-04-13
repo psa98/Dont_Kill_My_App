@@ -3,7 +3,7 @@ package c.ponom.survivalistapplication;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import c.ponom.keep_alive_library.LifeKeeper;
+import c.ponom.keep_alive_library.LifeKeeperAPI;
 
 
 public class Application extends android.app.Application {
@@ -20,7 +20,7 @@ public class Application extends android.app.Application {
     public void onCreate() {
         super.onCreate();
         sharedPreferences = getSharedPreferences("globalSettings", Context.MODE_PRIVATE);
-        LifeKeeper.getInstance().start(this,true);
+        LifeKeeperAPI.start(this,true);
         BackgroundWorker backGroundWorker = new BackgroundWorker();
         backGroundWorker.backgroundProcessorInit();
     }

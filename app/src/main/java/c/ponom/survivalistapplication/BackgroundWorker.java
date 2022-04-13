@@ -1,5 +1,8 @@
 package c.ponom.survivalistapplication;
 
+import static c.ponom.survivalistapplication.Application.TAG;
+import static c.ponom.survivalistapplication.Application.debugMode;
+
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -8,11 +11,7 @@ import java.util.Date;
 
 import c.ponom.keep_alive_library.BackgroundProcessor;
 import c.ponom.keep_alive_library.EventReceiver;
-import c.ponom.keep_alive_library.LifeKeeper;
-
-import static c.ponom.survivalistapplication.Application.TAG;
-import static c.ponom.survivalistapplication.Application.debugMode;
-import static c.ponom.survivalistapplication.model.SharedPrefsDAO.getParameterString;
+import c.ponom.keep_alive_library.LifeKeeperAPI;
 
 public class BackgroundWorker extends BackgroundProcessor {
 
@@ -29,25 +28,25 @@ public class BackgroundWorker extends BackgroundProcessor {
      */
     public void backgroundProcessorInit() {
         EventReceiver eventReceiver = EventReceiver.getInstance();
-        LifeKeeper lifeKeeper = LifeKeeper.getInstance();
-        lifeKeeper.subscribeOnAllEvents()
+
+        LifeKeeperAPI.subscribeOnAllEvents()
                 .observeForever(time ->{
                     if (debugMode) Log.e(TAG, "some  event detected");});
 
-        LiveData<Long> liveData60s = lifeKeeper.subscribeOnPeriodicEvents(60);
+        LiveData<Long> liveData60s = LifeKeeperAPI.subscribeOnPeriodicEvents(60);
         liveData60s.  observeForever(time ->{
             Logger.appendEvent("\n"+Logger.formattedTimeStamp()+
                     " Periodic Event  logged in receiver - 60s");
 
                     if (debugMode) Log.e(TAG, "detected periodic event - 60 s");});
 
-        LiveData<Long> liveData90s = lifeKeeper.subscribeOnPeriodicEvents(90);
+        LiveData<Long> liveData90s = LifeKeeperAPI.subscribeOnPeriodicEvents(90);
         liveData90s.observeForever(time ->{
                     Logger.appendEvent("\n"+Logger.formattedTimeStamp()+
                     " Periodic Event  logged in receiver - 90s");
                     if (debugMode) Log.e(TAG, "detected periodic event - 90 s");});
 
-        lifeKeeper.setEventListener(timestamp -> {
+        LifeKeeperAPI.setEventListener(timestamp -> {
             if (debugMode) Log.e(TAG, "onEvent"+ new Date());
         });
         eventReceiver.setBatteryEventListener(percentCharged -> {
@@ -70,17 +69,16 @@ public class BackgroundWorker extends BackgroundProcessor {
                     +" Doze mode event logged in receiver, mode="+mode);
         });
 
-        String oldSkippedEventsList = getParameterString("skipped");
-        String oldEventsList = getParameterString("events");
+        //String oldSkippedEventsList = getParameterString("skipped");
+        //String oldEventsList = getParameterString("events");
         Logger.appendEvent("\n" + Logger.formattedTimeStamp()
-                + " Service relaunched ");
+                + " Application relaunched ");
 
         Logger.registerInSkippedLogEvent("\n" + Logger.formattedTimeStamp()
-                + " Service relaunched ");
+                + " Application relaunched ");
 
-
-        Logger.liveEventsList.postValue(oldEventsList);
-        Logger.liveSkippedEventsList.postValue(oldSkippedEventsList);
+        // todo Logger.liveEventsList.postValue(oldEventsList);
+        //Logger.liveSkippedEventsList.postValue(oldSkippedEventsList);
     }
 
     @Override

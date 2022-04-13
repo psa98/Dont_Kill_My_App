@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
 
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
 
@@ -29,7 +29,9 @@ android {
 
 dependencies {
 
-    implementation 'androidx.work:work-runtime:2.6.0'
+    implementation "androidx.lifecycle:lifecycle-livedata:2.4.1"
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation 'androidx.work:work-runtime:2.7.1'
     implementation 'org.jetbrains:annotations:18.0.0'
 
 }

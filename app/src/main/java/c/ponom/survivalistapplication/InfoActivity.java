@@ -1,5 +1,7 @@
 package c.ponom.survivalistapplication;
 
+import static c.ponom.survivalistapplication.model.SharedPrefsDAO.DataType.STRING;
+
 import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,10 +16,8 @@ import androidx.lifecycle.LiveData;
 import java.util.Date;
 import java.util.Locale;
 
-import c.ponom.keep_alive_library.LifeKeeper;
+import c.ponom.keep_alive_library.LifeKeeperAPI;
 import c.ponom.survivalistapplication.model.SharedPrefsDAO;
-
-import static c.ponom.survivalistapplication.model.SharedPrefsDAO.DataType.STRING;
 
 @SuppressLint("SetTextI18n")
 public class InfoActivity extends AppCompatActivity {
@@ -25,15 +25,15 @@ public class InfoActivity extends AppCompatActivity {
     private EditText list, skippedList;
     private boolean refreshingLogs = true;
     private TextView lastEvent;
-    private LiveData<Long> eventBus;
-    private final LifeKeeper lifeKeeper=LifeKeeper.getInstance();
+    private LiveData<Long> AllEvents;
+
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_info);
         list = findViewById(R.id.logList);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             list.setShowSoftInputOnFocus(false);
@@ -52,8 +52,8 @@ public class InfoActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Logger.refreshLists();
-        eventBus = lifeKeeper.subscribeOnAllEvents();
-        eventBus.observe(this, value -> {
+        AllEvents = LifeKeeperAPI.subscribeOnAllEvents();
+        AllEvents.observe(this, value -> {
             if (value == null) return;
             Date date = new Date();
             date.setTime(value);
@@ -64,13 +64,13 @@ public class InfoActivity extends AppCompatActivity {
     private void showAndScrollToEnd(String newList) {
         list.setText(newList);
         if (!newList.isEmpty()) list.setSelection(newList.length() - 1, newList.length());
-        list.clearFocus(); // костыль для скролла - выделить посл.символ, убрать выделение
+        list.clearFocus();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        lifeKeeper.unsubscribeEvents(eventBus);
+        LifeKeeperAPI.unsubscribeEvents(AllEvents);
     }
 
     private void showSkippedAndScrollToEnd(String newList) {

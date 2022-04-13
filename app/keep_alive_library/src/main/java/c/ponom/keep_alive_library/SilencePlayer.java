@@ -12,19 +12,20 @@ public class SilencePlayer {
 
     static private MediaPlayer player;
     boolean playerPlaying = false;
+    boolean playerContinuouslyPlaying = false;
     int audioResourceId;
 
 
+    public void stopRepeat() {
+        playerContinuouslyPlaying = false;
+    }
 
-    @SuppressWarnings("unused")
-    private SilencePlayer(){
+
+    public SilencePlayer(){
 
     }
 
-    public SilencePlayer(Context context, int audioResource)  {
-        player =MediaPlayer.create(context, audioResource);
-        audioResourceId=audioResource;
-    }
+
 
     public void setVolume(float volume){
         if (player != null)
@@ -56,7 +57,6 @@ public class SilencePlayer {
 
 
     public void releasePlayer() {
-
         if (player != null) {
             if (playerPlaying) pausePlayer();
             player.reset();
@@ -65,8 +65,19 @@ public class SilencePlayer {
         }
     }
 
+    void playOnce(Context context,int audioResource){
+        audioResourceId = audioResource;
+        releasePlayer();
+        startPlayer(context);
+        player.setOnCompletionListener(mp -> {
+            releasePlayer();
+        });
+
+    }
+    // todo - не доделано проигрывние после рестарта несколько раз
     public void launchNewPeriodicPlay(Context context,int audioResource, int pause){
         audioResourceId = audioResource;
+        setVolume(LifeKeeper.AUDIO_VOLUME);
         releasePlayer();
         player =MediaPlayer.create(context, audioResourceId);
         startPlayer(context);

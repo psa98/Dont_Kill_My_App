@@ -24,15 +24,26 @@ public final class RelaunchWorkRequest extends Worker {
         String tagString = "";
         for (String tagItem : tags) {
             if (!tagItem.startsWith("seconds=")) continue;
+            //начиная с 8 символа в тэге у нас идет число секунд периодичности данного воркера.
+            // система добавляет и свои тэги в другом формате, надо их игнорировать
             tagString = tagItem.substring(8);
             break;
         }
-        int period = Integer.parseInt(tagString);
+        // что-то пошло не так, в тэге нет правильного времени, перезапуска не будет
         if (tagString.isEmpty()) return Result.failure();
+
+        int period = 0;
+        try {
+            period = Integer.parseInt(tagString);
+        }catch (NumberFormatException exception){
+            exception.printStackTrace();
+            return Result.failure();
+            // что-то пошло не так, в тэге нет правильного времени, перезапуска не будет
+        }
+        if (period==0) return Result.failure();
         // что-то пошло не так, в теге нет правильного времени, перезапуска не будет
         lifeKeeper.launchRepeatingWorkRequest(period);
-        lifeKeeper.launchTimerTask();
-        lifeKeeper.emitEvents();
+        lifeKeeper.launchTimerTask();        lifeKeeper.emitEvents();
         return Result.success();
     }
 }

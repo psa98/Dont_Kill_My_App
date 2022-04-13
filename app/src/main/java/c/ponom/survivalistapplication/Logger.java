@@ -1,5 +1,13 @@
 package c.ponom.survivalistapplication;
 
+import static c.ponom.survivalistapplication.Application.TAG;
+import static c.ponom.survivalistapplication.Application.debugMode;
+import static c.ponom.survivalistapplication.model.SharedPrefsDAO.DataType.LONG;
+import static c.ponom.survivalistapplication.model.SharedPrefsDAO.DataType.STRING;
+import static c.ponom.survivalistapplication.model.SharedPrefsDAO.getParameterLong;
+import static c.ponom.survivalistapplication.model.SharedPrefsDAO.getParameterString;
+import static c.ponom.survivalistapplication.model.SharedPrefsDAO.saveParameter;
+
 import android.annotation.SuppressLint;
 import android.util.Log;
 
@@ -10,14 +18,6 @@ import java.util.Date;
 import java.util.Locale;
 
 import c.ponom.survivalistapplication.model.SharedPrefsDAO;
-
-import static c.ponom.survivalistapplication.Application.TAG;
-import static c.ponom.survivalistapplication.Application.debugMode;
-import static c.ponom.survivalistapplication.model.SharedPrefsDAO.DataType.LONG;
-import static c.ponom.survivalistapplication.model.SharedPrefsDAO.DataType.STRING;
-import static c.ponom.survivalistapplication.model.SharedPrefsDAO.getParameterLong;
-import static c.ponom.survivalistapplication.model.SharedPrefsDAO.getParameterString;
-import static c.ponom.survivalistapplication.model.SharedPrefsDAO.saveParameter;
 
 public class Logger {
 
@@ -30,7 +30,7 @@ public class Logger {
     public static synchronized void appendEvent(String eventString) {
         String oldEventsList = getParameterString("events");
         if (oldEventsList.length() > 200000) oldEventsList =
-                // режем лог - размер SP ограничен
+                // режем лог - размер SP ограничен примерно парой мегабайт оказывается
                 oldEventsList.substring(oldEventsList.length() - 30000);
         String logString = oldEventsList + eventString;
         saveParameter(logString, "events", STRING);
@@ -58,6 +58,9 @@ public class Logger {
                             formatDate(currentTimeDate) +
                             " for " + secondsBetween + "s";
             String skippedLogString = oldSkippedEventsList + skippedEventDescription;
+            if (skippedLogString.length() > 200000) skippedLogString =
+                    // режем лог - размер SP ограничен примерно парой мегабайт оказывается
+                    skippedLogString.substring(skippedLogString.length() - 30000);
             saveParameter(skippedLogString, "skipped", STRING);
             liveSkippedEventsList.postValue(skippedLogString);
         }
@@ -73,6 +76,7 @@ public class Logger {
     public static synchronized void registerInSkippedLogEvent(String event) {
         String oldSkippedEventsList = getParameterString("skipped");
         saveParameter(oldSkippedEventsList + event, "skipped", STRING);
+        liveSkippedEventsList.postValue(oldSkippedEventsList + event);
     }
 
 
