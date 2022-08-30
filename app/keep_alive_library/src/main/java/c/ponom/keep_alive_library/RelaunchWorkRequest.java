@@ -31,7 +31,6 @@ public final class RelaunchWorkRequest extends Worker {
         }
         // что-то пошло не так, в тэге нет правильного времени, перезапуска не будет
         if (tagString.isEmpty()) return Result.failure();
-
         int period = 0;
         try {
             period = Integer.parseInt(tagString);
@@ -40,10 +39,11 @@ public final class RelaunchWorkRequest extends Worker {
             return Result.failure();
             // что-то пошло не так, в тэге нет правильного времени, перезапуска не будет
         }
-        if (period==0) return Result.failure();
         // что-то пошло не так, в теге нет правильного времени, перезапуска не будет
+        if (period==0) return Result.failure();
         lifeKeeper.launchRepeatingWorkRequest(period);
-        lifeKeeper.launchTimerTask();        lifeKeeper.emitEvents();
+        lifeKeeper.launchTimerTask();
+        lifeKeeper.emitEvents();
         return Result.success();
     }
 }

@@ -3,6 +3,8 @@ package c.ponom.keep_alive_library;
 
 import static android.content.Intent.ACTION_BATTERY_CHANGED;
 import static android.content.Intent.ACTION_BOOT_COMPLETED;
+import static android.content.Intent.ACTION_DATE_CHANGED;
+import static android.content.Intent.ACTION_POWER_CONNECTED;
 import static android.content.Intent.ACTION_SCREEN_ON;
 import static android.content.Intent.ACTION_TIME_TICK;
 import static android.content.Intent.ACTION_USER_PRESENT;
@@ -35,6 +37,9 @@ public final class KeepAliveReceiver extends BroadcastReceiver {
         return INSTANCE;
     }
 
+    /*
+
+     */
     @Override
     public void onReceive(Context context, Intent intent) {
         final LifeKeeper lifeKeeper = LifeKeeper.getInstance();
@@ -42,6 +47,7 @@ public final class KeepAliveReceiver extends BroadcastReceiver {
             case ACTION_BOOT_COMPLETED:
                 break;
             case ACTION_TIME_TICK:
+            case ACTION_DATE_CHANGED:
                 if (eventReceiver.tickEventListener!=null)
                     eventReceiver.tickEventListener.onTickEvent();
                 break;
@@ -50,7 +56,8 @@ public final class KeepAliveReceiver extends BroadcastReceiver {
                     eventReceiver.batteryEventListener.
                             onBatteryEvent(powerStateUtils.getCurrentBatteryCharge(context));
                 break;
-            case   ACTION_DEVICE_IDLE_MODE_CHANGED:
+            case ACTION_POWER_CONNECTED:
+            case ACTION_DEVICE_IDLE_MODE_CHANGED:
                 final boolean doseModeState = powerStateUtils.getDoseModeState(context);
                 if (eventReceiver.dozeEventListener!=null)
                     eventReceiver.dozeEventListener.
@@ -59,7 +66,7 @@ public final class KeepAliveReceiver extends BroadcastReceiver {
                     eventReceiver.internalDozeModeListener.
                             onDozeModeChangeInternal(context, doseModeState);
                 break;
-            case   ACTION_POWER_SAVE_MODE_CHANGED:
+            case ACTION_POWER_SAVE_MODE_CHANGED:
                 final boolean powerSaveState = powerStateUtils.getPowerSaveMode(context);
             case ACTION_USER_PRESENT:
             case ACTION_SCREEN_ON:

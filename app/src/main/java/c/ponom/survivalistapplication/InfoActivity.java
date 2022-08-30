@@ -1,5 +1,7 @@
 package c.ponom.survivalistapplication;
 
+import static java.util.Locale.getDefault;
+import static c.ponom.survivalistapplication.Logger.refreshLists;
 import static c.ponom.survivalistapplication.model.SharedPrefsDAO.DataType.STRING;
 
 import android.annotation.SuppressLint;
@@ -14,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
 
 import java.util.Date;
-import java.util.Locale;
 
 import c.ponom.keep_alive_library.LifeKeeperAPI;
 import c.ponom.survivalistapplication.model.SharedPrefsDAO;
@@ -25,19 +26,15 @@ public class InfoActivity extends AppCompatActivity {
     private EditText list, skippedList;
     private boolean refreshingLogs = true;
     private TextView lastEvent;
-    private LiveData<Long> AllEvents;
-
-
-
+    private LiveData<Long> allEvents;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info);
         list = findViewById(R.id.logList);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             list.setShowSoftInputOnFocus(false);
-        }
         skippedList = findViewById(R.id.skippedList);
         lastEvent = findViewById(R.id.lastEvent);
         LiveData<String> eventList = Logger.liveEventsList;
@@ -51,13 +48,14 @@ public class InfoActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Logger.refreshLists();
-        AllEvents = LifeKeeperAPI.subscribeOnAllEvents();
-        AllEvents.observe(this, value -> {
-            if (value == null) return;
-            Date date = new Date();
-            date.setTime(value);
-            lastEvent.setText(String.format(Locale.getDefault(), "Last event %tT", date));
+        refreshLists();
+        allEvents = LifeKeeperAPI.subscribeOnAllEvents();
+        allEvents.observe(this, value -> {
+            if (value != null) {
+                Date date = new Date();
+                date.setTime(value);
+                lastEvent.setText(String.format(getDefault(), "Last event %tT", date));
+            }
         });
     }
 
@@ -70,7 +68,7 @@ public class InfoActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        LifeKeeperAPI.unsubscribeEvents(AllEvents);
+        LifeKeeperAPI.unsubscribeEvents(allEvents);
     }
 
     private void showSkippedAndScrollToEnd(String newList) {
@@ -90,7 +88,6 @@ public class InfoActivity extends AppCompatActivity {
 
 
     public void checkBoxClicked(View view) {
-        CheckBox checkBox = (CheckBox) view;
-        refreshingLogs = checkBox.isChecked();
+        refreshingLogs = ((CheckBox) view).isChecked();
     }
 }

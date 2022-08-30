@@ -69,16 +69,12 @@ public class BackgroundWorker extends BackgroundProcessor {
                     +" Doze mode event logged in receiver, mode="+mode);
         });
 
-        //String oldSkippedEventsList = getParameterString("skipped");
-        //String oldEventsList = getParameterString("events");
         Logger.appendEvent("\n" + Logger.formattedTimeStamp()
                 + " Application relaunched ");
 
         Logger.registerInSkippedLogEvent("\n" + Logger.formattedTimeStamp()
                 + " Application relaunched ");
 
-        // todo Logger.liveEventsList.postValue(oldEventsList);
-        //Logger.liveSkippedEventsList.postValue(oldSkippedEventsList);
     }
 
     @Override

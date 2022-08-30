@@ -23,31 +23,33 @@ public class Logger {
 
 
     private static final long EVENT_WAS_SKIPPED_TIME = 240;
+    private static final int MAX_LOG_SIZE = 200000;
+    private  static final int MIN_LOG_SIZE = 30000;
+
     static final MutableLiveData<String> liveEventsList = new MutableLiveData<>();
     static final MutableLiveData<String> liveSkippedEventsList = new MutableLiveData<>();
 
 
     public static synchronized void appendEvent(String eventString) {
         String oldEventsList = getParameterString("events");
-        if (oldEventsList.length() > 200000) oldEventsList =
+        if (oldEventsList.length() > MAX_LOG_SIZE) oldEventsList =
                 // режем лог - размер SP ограничен примерно парой мегабайт оказывается
-                oldEventsList.substring(oldEventsList.length() - 30000);
+                oldEventsList.substring(oldEventsList.length() - MIN_LOG_SIZE);
         String logString = oldEventsList + eventString;
         saveParameter(logString, "events", STRING);
         liveEventsList.postValue(logString);
         testForSkippedEvents();
-        if (debugMode)Log.i(TAG, "LiveKeeper event:");
+        if (debugMode)Log.i(TAG, "LiveKeeper event:"+eventString);
     }
 
     private static void testForSkippedEvents() {
         Date currentTimeDate = new Date();
         Date lastEventDate = new Date();
-        if (SharedPrefsDAO.hasParameterSet("lastEvent")) {
+        if (SharedPrefsDAO.hasParameterSet("lastEvent"))
             lastEventDate.setTime(getParameterLong("lastEvent"));
-            if (debugMode) Log.e(TAG, "testForSkippedEvents: "+ lastEventDate +" / \n "+currentTimeDate );
-         }
-        SharedPrefsDAO.saveParameter(currentTimeDate.getTime(), "lastEvent", LONG);
-        long secondsBetween = currentTimeDate.getTime() / 1000 - lastEventDate.getTime() / 1000;
+        final long timeNow = currentTimeDate.getTime();
+        SharedPrefsDAO.saveParameter(timeNow, "lastEvent", LONG);
+        long secondsBetween = timeNow / 1000 - lastEventDate.getTime() / 1000;
         if (debugMode) Log.i(TAG, "testForSkippedEvents: seconds "+ secondsBetween);
         if (secondsBetween > EVENT_WAS_SKIPPED_TIME) {
             String oldSkippedEventsList = getParameterString("skipped");
@@ -57,12 +59,15 @@ public class Logger {
                             " and  " +
                             formatDate(currentTimeDate) +
                             " for " + secondsBetween + "s";
-            String skippedLogString = oldSkippedEventsList + skippedEventDescription;
-            if (skippedLogString.length() > 200000) skippedLogString =
-                    // режем лог - размер SP ограничен примерно парой мегабайт оказывается
-                    skippedLogString.substring(skippedLogString.length() - 30000);
-            saveParameter(skippedLogString, "skipped", STRING);
-            liveSkippedEventsList.postValue(skippedLogString);
+            if (debugMode)Log.i(TAG, "LiveKeeper event:"+skippedEventDescription);
+            String appendedLog = oldSkippedEventsList + skippedEventDescription;
+
+            if (appendedLog.length() > MAX_LOG_SIZE) {
+                appendedLog =appendedLog.substring(appendedLog.length() - MIN_LOG_SIZE);
+            }
+                    // режем лог - размер SP ограничен
+            saveParameter(appendedLog, "skipped", STRING);
+            liveSkippedEventsList.postValue(appendedLog);
         }
     }
 

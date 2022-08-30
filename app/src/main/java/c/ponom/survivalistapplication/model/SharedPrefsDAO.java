@@ -1,12 +1,12 @@
 package c.ponom.survivalistapplication.model;
 
+import static c.ponom.survivalistapplication.Application.getSharedPreferences;
+
 import android.annotation.SuppressLint;
 
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Map;
-
-import static c.ponom.survivalistapplication.Application.getSharedPreferences;
 
 
 @SuppressWarnings({"unused"})
@@ -29,24 +29,25 @@ public class SharedPrefsDAO {
     }
 
     public enum DataType {
-
         BOOLEAN(false, Boolean.TYPE),
         FLOAT(0f, Float.TYPE),
         INT(0, Integer.TYPE),
         LONG(0L, Long.TYPE),
         STRING("", String.class);
-
         private final Object defaultValue;
-
         DataType(Object defaultValue, Type type) {
             this.defaultValue = defaultValue;
         }
     }
 
+    public static synchronized boolean  contains(String key){
+        return getSharedPreferences().contains(key);
+    }
 
-    public static synchronized void  saveParameter(Object parameter, String key, DataType parameterType){
 
-        switch (parameterType) {
+    public static synchronized void  saveParameter(Object parameter, String key, DataType type){
+
+        switch (type) {
             case  BOOLEAN:
                 getSharedPreferences().edit().putBoolean(key, (boolean)parameter).commit();
                 break;
@@ -84,5 +85,24 @@ public class SharedPrefsDAO {
         return getSharedPreferences().getFloat(key, (float) DataType.FLOAT.defaultValue);
     }
 
+    static  public synchronized long  getParameterLong (String key, long defValue){
+        return getSharedPreferences().getLong(key, defValue);
+    }
+
+    static  public synchronized int getParameterInt (String key, int defValue){
+        return getSharedPreferences().getInt(key, defValue);
+    }
+
+    static  public synchronized boolean getParameterBoolean (String key,boolean defValue){
+        return getSharedPreferences().getBoolean(key, defValue);
+    }
+
+    static  public synchronized String getParameterString (String key,String defValue){
+        return getSharedPreferences().getString(key, defValue);
+    }
+
+    static  public synchronized float getParameterFloat (String key, float defValue){
+        return getSharedPreferences().getFloat(key, defValue);
+    }
 
 }

@@ -3,6 +3,8 @@ package c.ponom.keep_alive_library;
 import static android.content.Intent.ACTION_BATTERY_CHANGED;
 import static android.content.Intent.ACTION_BATTERY_LOW;
 import static android.content.Intent.ACTION_CONFIGURATION_CHANGED;
+import static android.content.Intent.ACTION_DATE_CHANGED;
+import static android.content.Intent.ACTION_POWER_CONNECTED;
 import static android.content.Intent.ACTION_SCREEN_ON;
 import static android.content.Intent.ACTION_TIME_TICK;
 import static android.content.Intent.ACTION_USER_PRESENT;
@@ -40,7 +42,7 @@ public final class LifeKeeper {
     private static volatile LifeKeeper INSTANCE;
     private static final long FREQUENT_REQUEST_PERIOD = 175;
     private static final long INFREQUENT_REQUEST_PERIOD = 295;
-    private static final long RARE_REQUEST_PERIOD = 1200;
+    private static final long RARE_REQUEST_PERIOD = 3700;
     private static final long MINIMUM_LIFEDATA_PERIOD = 60;
     private static final long TIMER_TASK_PERIOD = 30;
     public static float AUDIO_VOLUME = 0.01f;
@@ -293,19 +295,21 @@ public final class LifeKeeper {
 
     final synchronized void emitEvents() {
         if (!running) return;
-        long currentInstant =  System.currentTimeMillis();
+        long currentTime =  System.currentTimeMillis();
         if (sharedPreferencesRepository!=null) {
-            sharedPreferencesRepository.saveParameter(currentInstant, "lastEventDate",
+            sharedPreferencesRepository.saveParameter(currentTime, "lastEventDate",
                     DataType.LONG);
         }
         // запись в SP  намекает системе что приложение делает что-то полезное
-        onEachEvent(currentInstant);
-        checkAllEventsSubscriptions(currentInstant);
-        checkPeriodicSubscriptions(currentInstant);
+        onEachEvent(currentTime);
+        checkAllEventsSubscriptions(currentTime);
+        checkPeriodicSubscriptions(currentTime);
         launchTimerTask();
     }
 
     private void registerReceivers(@NotNull Context context) {
+        context.registerReceiver(keepAliveReceiver, new IntentFilter(ACTION_DATE_CHANGED));
+        context.registerReceiver(keepAliveReceiver, new IntentFilter(ACTION_POWER_CONNECTED));
         context.registerReceiver(keepAliveReceiver, new IntentFilter(ACTION_TIME_TICK));
         context.registerReceiver(keepAliveReceiver, new IntentFilter(ACTION_SCREEN_ON));
         context.registerReceiver(keepAliveReceiver, new IntentFilter(ACTION_BATTERY_CHANGED));
@@ -384,6 +388,7 @@ public final class LifeKeeper {
             liveData.setValue(currentTimestamp);
         else{
             // переброска исполнения для воркеров в main thread, иначе LiveData.set не работает
+            //postValue не используется
             Handler handler = new Handler(mainLooper);
             handler.post(() -> liveData.setValue(currentTimestamp));
         }

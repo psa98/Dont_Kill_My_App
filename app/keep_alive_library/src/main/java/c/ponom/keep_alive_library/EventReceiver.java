@@ -17,16 +17,9 @@ public class EventReceiver {
         INSTANCE=this;
     }
 
-    /**
-     * Возвращает состояние заряда батареи в процентах.
-     *
-     * */
-
 
     public synchronized static EventReceiver getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new EventReceiver();
-        }
+        if (INSTANCE == null) INSTANCE = new EventReceiver();
         return INSTANCE;
     }
 
