@@ -1,7 +1,7 @@
 package c.ponom.survivalistapplication;
 
-import static c.ponom.survivalistapplication.Application.TAG;
-import static c.ponom.survivalistapplication.Application.debugMode;
+import static c.ponom.survivalistapplication.App.TAG;
+import static c.ponom.survivalistapplication.App.debugMode;
 import static c.ponom.survivalistapplication.model.SharedPrefsDAO.DataType.LONG;
 import static c.ponom.survivalistapplication.model.SharedPrefsDAO.DataType.STRING;
 import static c.ponom.survivalistapplication.model.SharedPrefsDAO.getParameterLong;

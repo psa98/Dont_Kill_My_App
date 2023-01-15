@@ -300,7 +300,7 @@ public final class LifeKeeper {
             sharedPreferencesRepository.saveParameter(currentTime, "lastEventDate",
                     DataType.LONG);
         }
-        // запись в SP  намекает системе что приложение делает что-то полезное
+        // запись в SP намекает системе что приложение делает что-то полезное
         onEachEvent(currentTime);
         checkAllEventsSubscriptions(currentTime);
         checkPeriodicSubscriptions(currentTime);
@@ -368,7 +368,7 @@ public final class LifeKeeper {
     }
 
 
-    /*  метод вызывается  с максимально возможной частотой, позволяемой системой, типичный параметр
+    /*  метод вызывается с максимально возможной частотой, позволяемой системой, типичный параметр
      * по итогам тестов - от 5-10 секунд на зарядке телефона до каждые 5-10 и до 20 минут в doze mode
      */
     public interface LifeKeeperEventsListener {

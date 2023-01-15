@@ -1,12 +1,13 @@
 package c.ponom.survivalistapplication;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 
 import c.ponom.keep_alive_library.LifeKeeperAPI;
 
 
-public class Application extends android.app.Application {
+public class App extends Application {
 
 
     public static final String TAG = "LifeKeeper";

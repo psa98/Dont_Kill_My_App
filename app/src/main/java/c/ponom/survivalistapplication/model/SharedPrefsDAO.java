@@ -1,6 +1,6 @@
 package c.ponom.survivalistapplication.model;
 
-import static c.ponom.survivalistapplication.Application.getSharedPreferences;
+import static c.ponom.survivalistapplication.App.getSharedPreferences;
 
 import android.annotation.SuppressLint;
 
