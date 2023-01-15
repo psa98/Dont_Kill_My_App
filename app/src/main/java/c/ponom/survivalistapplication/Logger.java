@@ -1,5 +1,6 @@
 package c.ponom.survivalistapplication;
 
+import static java.text.DateFormat.MEDIUM;
 import static c.ponom.survivalistapplication.App.TAG;
 import static c.ponom.survivalistapplication.App.debugMode;
 import static c.ponom.survivalistapplication.model.SharedPrefsDAO.DataType.LONG;
@@ -11,18 +12,21 @@ import static c.ponom.survivalistapplication.model.SharedPrefsDAO.saveParameter;
 import android.annotation.SuppressLint;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import c.ponom.survivalistapplication.model.SharedPrefsDAO;
 
 public class Logger {
 
 
-    private static final long EVENT_WAS_SKIPPED_TIME = 240;
+    private static final long EVENT_WAS_SKIPPED_TIME = 360;
     private static final int MAX_LOG_SIZE = 200000;
     private  static final int MIN_LOG_SIZE = 30000;
 
@@ -58,7 +62,9 @@ public class Logger {
                             formatDate(lastEventDate) +
                             " and  " +
                             formatDate(currentTimeDate) +
-                            " for " + secondsBetween + "s";
+                            " for " +
+                            calculatePeriodString(currentTimeDate.getTime(),
+                                    lastEventDate.getTime()) ;
             if (debugMode)Log.i(TAG, "LiveKeeper event:"+skippedEventDescription);
             String appendedLog = oldSkippedEventsList + skippedEventDescription;
 
@@ -97,6 +103,16 @@ public class Logger {
         liveSkippedEventsList.postValue(skippedLogString);
     }
 
+
+
+    @NonNull
+    private static String calculatePeriodString(long timeTo, long timeFrom) {
+        int offset= TimeZone.getDefault().getOffset(timeTo);
+        DateFormat format= DateFormat.getTimeInstance(MEDIUM);
+        final Date interval = new Date(timeTo -timeFrom-offset);
+        long days = (timeTo - timeFrom - offset)/(24*3600*1000);
+        return days+" d " + format.format(interval) + " h";
+    }
 }
 
 

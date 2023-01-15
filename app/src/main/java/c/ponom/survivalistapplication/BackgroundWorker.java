@@ -52,17 +52,16 @@ public class BackgroundWorker extends BackgroundProcessor {
                     " Periodic Event  logged in receiver - 90s");
                     if (debugMode) Log.i(TAG, "detected periodic event - 90 s");});
 
-        LiveData<Long> liveData12h = LifeKeeperAPI.subscribeOnPeriodicEvents(60*17);
+        LiveData<Long> liveData12h = LifeKeeperAPI.subscribeOnPeriodicEvents(3600*60);
 
         liveData12h.observeForever(time ->{
             String period = calculatePeriodFromLast(time);
             Logger.appendEvent("\n"+Logger.formattedTimeStamp()+
-                    "Rare Event  logged in receiver - 12h, after "+period+" time");
+                    " Rare Event  logged in receiver - 12h, after "+period+"h time");
             Logger.registerInSkippedLogEvent("\n"+Logger.formattedTimeStamp()+
-                    "Rare Event  logged in receiver - 12h, after "+period+" time");
+                    " Rare Event  logged in receiver - 12h, after "+period+"h time");
             if (debugMode) Log.i(TAG, "detected periodic event - 12h");
             setLast12hEventTime();
-
         });
 
         LifeKeeperAPI.setEventListener(timestamp -> {
@@ -102,9 +101,10 @@ public class BackgroundWorker extends BackgroundProcessor {
         DateFormat format= DateFormat.getTimeInstance(MEDIUM);
         final Date interval = new Date(time - last12hEventTime()-offset);
         long days = (time - last12hEventTime()-offset)/(24*3600*1000);
-        String period = days+" d + " + format.format(interval);
-        return period;
+        return days+" d " + format.format(interval);
     }
+
+
 
     Long last12hEventTime() {
         return getSharedPreferences().getLong("last_12h", currentTimeMillis());
