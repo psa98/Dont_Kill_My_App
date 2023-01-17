@@ -109,10 +109,12 @@ public class Logger {
     private static String calculatePeriodString(long timeTo, long timeFrom) {
         int offset= TimeZone.getDefault().getOffset(timeTo);
         DateFormat format= DateFormat.getTimeInstance(MEDIUM);
-        final Date interval = new Date(timeTo -timeFrom-offset);
         long days = (timeTo - timeFrom - offset)/(24*3600*1000);
-        return days+" d " + format.format(interval) + " h";
+        long rest = (timeTo - timeFrom - offset)%(24*3600*1000);
+        return days+" d " + format.format(new Date(rest)) + " h";
     }
+
+
 }
 
 

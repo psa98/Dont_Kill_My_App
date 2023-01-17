@@ -99,9 +99,9 @@ public class BackgroundWorker extends BackgroundProcessor {
     private String calculatePeriodFromLast(Long time) {
         int offset= TimeZone.getDefault().getOffset(time);
         DateFormat format= DateFormat.getTimeInstance(MEDIUM);
-        final Date interval = new Date(time - last12hEventTime()-offset);
         long days = (time - last12hEventTime()-offset)/(24*3600*1000);
-        return days+" d " + format.format(interval);
+        long rest = (time - last12hEventTime()-offset)%(24*3600*1000);
+        return days+" d " + format.format(new Date(rest));
     }
 
 
