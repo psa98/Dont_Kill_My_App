@@ -52,7 +52,7 @@ public class BackgroundWorker extends BackgroundProcessor {
                     " Periodic Event  logged in receiver - 90s");
                     if (debugMode) Log.i(TAG, "detected periodic event - 90 s");});
 
-        LiveData<Long> liveData12h = LifeKeeperAPI.subscribeOnPeriodicEvents(3600*60);
+        LiveData<Long> liveData12h = LifeKeeperAPI.subscribeOnPeriodicEvents(3600*12);
 
         liveData12h.observeForever(time ->{
             String period = calculatePeriodFromLast(time);
