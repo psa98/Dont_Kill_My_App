@@ -69,9 +69,7 @@ public class SilencePlayer {
         audioResourceId = audioResource;
         releasePlayer();
         startPlayer(context);
-        player.setOnCompletionListener(mp -> {
-            releasePlayer();
-        });
+        player.setOnCompletionListener(mp -> releasePlayer());
 
     }
     // todo - не доделано проигрывние после рестарта несколько раз
