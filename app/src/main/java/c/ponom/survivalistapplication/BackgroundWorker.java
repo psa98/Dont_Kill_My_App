@@ -29,7 +29,6 @@ public class BackgroundWorker extends BackgroundProcessor {
      * метод так же вызывается при (автозапуске) если в onCreate Application класса есть
      * MyBackgroundWork myBackGroundWork = new MyBackgroundWork();
      * myBackGroundWork.backgroundProcessorSetup();
-     *
      * Фактически данный класс используется только для разгрузки Application от излишнего стартового кода
      */
     public void backgroundProcessorInit() {
@@ -53,15 +52,7 @@ public class BackgroundWorker extends BackgroundProcessor {
                     if (debugMode) Log.i(TAG, "detected periodic event - 90 s");
         });
 
-        LiveData<Long> liveData12h = LifeKeeperAPI.subscribeOnPeriodicEvents(3600*12);
 
-        liveData12h.observeForever(time ->{
-            String period = calculatePeriodFromLast(time);
-            Logger.appendEvent("\n"+Logger.formattedTimeStamp()+
-                    " Rare Event  logged in receiver - 12h, after "+period+"h time");
-            if (debugMode) Log.i(TAG, "detected periodic event - 12h");
-            setLast12hEventTime();
-        });
 
         LifeKeeperAPI.setEventListener(timestamp -> {
             if (debugMode) Log.i(TAG, "onEvent"+ new Date());

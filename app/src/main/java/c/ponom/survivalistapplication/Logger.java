@@ -27,8 +27,8 @@ public class Logger {
 
 
     private static final long EVENT_WAS_SKIPPED_TIME = 360;
-    private static final int MAX_LOG_SIZE = 200000;
-    private  static final int MIN_LOG_SIZE = 30000;
+    private static final int MAX_LOG_SIZE = 500000;
+    private  static final int MIN_LOG_SIZE = 300000;
 
     static final MutableLiveData<String> liveEventsList = new MutableLiveData<>();
     static final MutableLiveData<String> liveSkippedEventsList = new MutableLiveData<>();
@@ -63,8 +63,7 @@ public class Logger {
                             " and  " +
                             formatDate(currentTimeDate) +
                             " for " +
-                            calculatePeriodString(currentTimeDate.getTime(),
-                                    lastEventDate.getTime()) ;
+                            calculatePeriodString(lastEventDate.getTime(),currentTimeDate.getTime());
             if (debugMode)Log.i(TAG, "LiveKeeper event:"+skippedEventDescription);
             String appendedLog = oldSkippedEventsList + skippedEventDescription;
 
